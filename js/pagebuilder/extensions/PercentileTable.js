@@ -61,6 +61,7 @@
                         var tdData = percentileTable.calculatePercentile(ydata, json.data.percentileValues[i]);
                         td.html(tdData);
                     }
+                    percentileTable.percentileClass(tr);
                 },
                 fixture:Fixtures.page
             });
@@ -91,6 +92,20 @@
         }
         var o = data.sort(function(a,b){return a-b});
         return o;
+    }
+    percentileTable.percentileClass = function(row) {
+        var max = -1;
+        row.children().slice(1).each(function(){
+            var p = parseFloat($(this).text());
+            if (p > max){
+                max = p;
+            }
+        });
+            if (max > 62){
+            row.addClass('error');
+        }else {
+            row.addClass('success');
+        }
     }
     PageBuilder.extensions.percentileTable = percentileTable;
 })();
