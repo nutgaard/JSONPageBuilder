@@ -65,7 +65,6 @@ PageBuilder.extensions.percentileTable = function(container, json){
         PageBuilder.setAttribute(td, 'class', json.data.tablecellstyle);
         tr.appendChild(td);
 
-        console.debug('data', json.data.percentileValues)
         for (var i = 0; i < json.data.percentileValues.length; i++){
             var td = document.createElement('td');
             PageBuilder.setAttribute(td, 'class', json.data.tablecellstyle);

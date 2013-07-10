@@ -1,5 +1,4 @@
 PageBuilder.extensions.graph = function(container, json) {
-    console.debug('graph', json);
     var myDiv = document.createElement('div');
     PageBuilder.setAttribute(myDiv, 'class', json.classes);
     PageBuilder.setAttribute(myDiv, 'id', json.id);

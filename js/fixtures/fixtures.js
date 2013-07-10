@@ -7,6 +7,25 @@ function Fixtures(url, type) {
             elements: [
                 {
                     type: 'div',
+                    classes: 'hero-unit',
+                    elements:[
+                        {
+                            type: 'h1',
+                            data:{
+                                innerHTML: 'JPB - JSONPageBuilder'
+                            }
+
+                        },
+                        {
+                            type: 'p',
+                            data:{
+                                innerHTML: 'A lightweight and small framework for defining html in json'
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: 'div',
                     classes: 'row-fluid',
                     id: '',
                     elements:[

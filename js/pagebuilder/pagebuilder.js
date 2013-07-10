@@ -2,10 +2,8 @@ function PageBuilder() {
 
 }
 PageBuilder.build = function(container, json) {
-    if (typeof json == 'undefined'){
+    if (typeof json == 'undefined' || typeof json.elements == 'undefined'){
         return;
-    }else if (typeof json.elements == 'undefined') {
-        console.debug('leaf', json);
     }
     for (var childId = 0; childId < json.elements.length; childId++){
         var child = json.elements[childId];
@@ -30,10 +28,12 @@ PageBuilder.setAttribute = function(node, attributeName, attributeValue){
 }
 PageBuilder.extensions = {};
 PageBuilder.extensions.default = function (container, json){
-    console.debug('default', json);
     var type = document.createElement(json.type)
     PageBuilder.setAttribute(type, 'class', json.classes);
     PageBuilder.setAttribute(type, 'id', json.id);
+    if (typeof json.data !== 'undefined' && typeof json.data.innerHTML !== 'undefined'){
+        type.innerHTML = json.data.innerHTML;
+    }
     container.append(type);
     PageBuilder.build($(type), json);
 }
