@@ -1,3 +1,3 @@
-PageBuilder.extensions.graph = function(json) {
-    return 'This is a graph';
+PageBuilder.extensions.graph = function(container, json) {
+    container.html('This is a graph');
 }

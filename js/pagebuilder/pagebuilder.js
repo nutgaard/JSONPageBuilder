@@ -16,11 +16,9 @@ function PageBuilder(container, json) {
                 var renderer = PageBuilder.extensions[elementJSON.type];
                 var html = '';
                 if (typeof renderer == 'undefined'){
-                    html = PageBuilder.extensions.default(json);
-                }else {
-                    html = renderer(elementJSON);
+                    renderer = PageBuilder.extensions.default;
                 }
-                elementContainer.html(html);
+                renderer(elementContainer, elementJSON);
             }
         }
     }
