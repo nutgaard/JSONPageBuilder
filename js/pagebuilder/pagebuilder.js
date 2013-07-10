@@ -1,5 +1,26 @@
-function PageBuilder() {
+function PageBuilder(settings) {
+    this.settings = {
+        url: undefined,
+        json: {},
+        container: $('body')
+    }
+    this.settings = $.extend(this.settings, settings);
 
+    this.init = function() {
+        if (typeof this.settings.url !== 'undefined'){
+            $.get({
+                url: this.settings.url,
+                success: function(resp){
+                    PageBuilder.build(this.settings.container, JSON.parse(resp));
+                }.bind(this),
+                fixture:Fixtures.page
+            });
+        }else {
+            PageBuilder.build(this.container, this.json);
+        }
+
+    }
+    this.init();
 }
 PageBuilder.build = function(container, json) {
     if (typeof json == 'undefined' || typeof json.elements == 'undefined'){

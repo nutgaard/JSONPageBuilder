@@ -67,7 +67,7 @@ function Fixtures(url, type) {
                             data:{
                                 percentileOf:['ICWThingy', 'TSATCalculator'],
                                 percentileValues: [100, 90, 80, 0],
-                                tablestyle: 'table',
+                                tablestyle: 'table table-striped',
                                 tableheaderstyle: '',
                                 tablerowstyle: '',
                                 tablecellstyle: ''
