@@ -1,31 +1,41 @@
-function PageBuilder(container, json) {
-    this.conainer = container;
-    this.json = json;
+function PageBuilder() {
 
-    this.build = function() {
-        for (var rowId = 0; rowId < this.json.rows.length; rowId++){
-            container.append('<div class=""></div>');
-            var rowJSON = this.json.rows[rowId];
-            var rowContainer = container.find('div:last').addClass(rowJSON.style);
+}
+PageBuilder.build = function(container, json) {
+    if (typeof json == 'undefined'){
+        return;
+    }else if (typeof json.elements == 'undefined') {
+        console.debug('leaf', json);
+    }
+    for (var childId = 0; childId < json.elements.length; childId++){
+        var child = json.elements[childId];
+        PageBuilder.render(container, child);
+    }
 
-            for (var elementId = 0; elementId < rowJSON.elements.length; elementId++){
-                rowContainer.append('<div class=""></div>');
-                var elementJSON = rowJSON.elements[elementId];
-                var elementContainer = rowContainer.find('div:last').addClass(elementJSON.style);
-
-                var renderer = PageBuilder.extensions[elementJSON.type];
-                var html = '';
-                if (typeof renderer == 'undefined'){
-                    renderer = PageBuilder.extensions.default;
-                }
-                renderer(elementContainer, elementJSON);
-            }
-        }
+}
+PageBuilder.render = function(container, json){
+    var renderer = PageBuilder.extensions[json.type];
+    if (typeof renderer == 'undefined'){
+        renderer = PageBuilder.extensions.default;
+    }
+    renderer(container, json);
+}
+PageBuilder.setAttribute = function(node, attributeName, attributeValue){
+    function check(s){
+        return typeof s !== 'undefined' && s.toString().length > 0;
+    }
+    if (typeof node !== 'undefined' && check(attributeName) && check(attributeValue)){
+        node.setAttribute(attributeName, attributeValue);
     }
 }
 PageBuilder.extensions = {};
-PageBuilder.extensions.default = function (json){
-    return JSON.stringify(json);
+PageBuilder.extensions.default = function (container, json){
+    console.debug('default', json);
+    var type = document.createElement(json.type)
+    PageBuilder.setAttribute(type, 'class', json.classes);
+    PageBuilder.setAttribute(type, 'id', json.id);
+    container.append(type);
+    PageBuilder.build($(type), json);
 }
 
 

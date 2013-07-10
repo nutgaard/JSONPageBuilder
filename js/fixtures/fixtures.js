@@ -4,62 +4,55 @@ function Fixtures(url, type) {
 
     this.getLast24hJSON = function() {
         return {
-            url: url,
-            rows:[
+            elements: [
                 {
-                    style: 'row-fluid',
+                    type: 'div',
+                    classes: 'row-fluid',
+                    id: '',
                     elements:[
                         {
                             type: 'graph',
-                            style: 'span4',
-                            graphOf: [
-                                {
-                                    name: 'ICWThingy'
-                                }
-                            ]
+                            classes: 'span4',
+                            id: '',
+                            data:{
+                                graphOf:['ICWThingy']
+                            }
                         },
                         {
                             type: 'graph',
-                            style: 'span4',
-                            graphOf: [
-                                {
-                                    name: 'TSATCalculator'
-                                }
-                            ]
+                            classes: 'span4',
+                            id: '',
+                            data:{
+                                graphOf:['TSATCalculator']
+                            }
                         },
                         {
                             type: 'graph',
-                            style: 'span4',
-                            graphOf: [
-                                {
-                                    name: 'ICWThingy'
-                                },
-                                {
-                                    name: 'TSATCalculator'
-                                }
-                            ]
+                            classes: 'span4',
+                            id: '',
+                            data:{
+                                graphOf:['ICWThingy', 'TSATCalculator']
+                            }
                         }
                     ]
                 },
                 {
-                    style: 'row-fluid',
+                    type: 'div',
+                    classes: 'row-fluid',
+                    id: '',
                     elements:[
                         {
-                            type: 'percentile',
-                            style: '',
-                            tablestyle: 'table',
-                            tableheaderstyle: '',
-                            tablerowstyle: '',
-                            tabledatastyle: '',
-                            percentileOf: [
-                                {
-                                    name: 'ICWThingy'
-                                },
-                                {
-                                    name: 'TSATCalculator'
-                                }
-                            ],
-                            percentileValues: [100, 90, 80, 0]
+                            type: 'percentileTable',
+                            classes: '',
+                            id: '',
+                            data:{
+                                percentileOf:['ICWThingy', 'TSATCalculator'],
+                                percentileValues: [100, 90, 80, 0],
+                                tablestyle: 'table',
+                                tableheaderstyle: '',
+                                tablerowstyle: '',
+                                tablecellstyle: ''
+                            }
                         }
                     ]
                 }
@@ -157,7 +150,6 @@ function Fixtures(url, type) {
 }
 Fixtures.prototype.getResponse = function(){
     var json = {};
-
     switch (this.url){
         case 'last24h':
             json = this.getLast24hJSON();

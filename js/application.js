@@ -3,7 +3,6 @@ $(document).ready(function() {
 
     function buildPage(json) {
         var json = JSON.parse(json);
-        var pb = new PageBuilder($('.applicationcontainer'), json);
-        pb.build();
+        PageBuilder.build($('.applicationcontainer'), json);
     }
 });
