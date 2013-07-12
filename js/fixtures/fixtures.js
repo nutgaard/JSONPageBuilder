@@ -5,32 +5,32 @@ function Fixtures(url, type) {
     this.getLast24hJSON = function() {
         return {
             elements: [
-                {
-                    type: 'div',
-                    classes: 'hero-unit',
-                    elements: [
-                        {
-                            type: 'h1',
-                            elements: [
-                                {
-                                    type: 'p',
-                                    data: {
-                                        innerHTML: 'Test'
-                                    }
-                                }
-                            ],
-                            data: {
-                                innerHTML: 'JPB - JSONPageBuilder'
-                            }
-                        },
-                        {
-                            type: 'p',
-                            data: {
-                                innerHTML: 'A lightweight and small framework for defining html in json'
-                            }
-                        }
-                    ]
-                },
+//                {
+//                    type: 'div',
+//                    classes: 'hero-unit',
+//                    elements: [
+//                        {
+//                            type: 'h1',
+//                            elements: [
+//                                {
+//                                    type: 'p',
+//                                    data: {
+//                                        innerHTML: 'Test'
+//                                    }
+//                                }
+//                            ],
+//                            data: {
+//                                innerHTML: 'JPB - JSONPageBuilder'
+//                            }
+//                        },
+//                        {
+//                            type: 'p',
+//                            data: {
+//                                innerHTML: 'A lightweight and small framework for defining html in json'
+//                            }
+//                        }
+//                    ]
+//                },
                 {
                     type: 'div',
                     classes: 'row',
@@ -85,14 +85,14 @@ function Fixtures(url, type) {
                                 tablerowstyle: '',
                                 tablecellstyle: ''
                             }
-                        },
-                        {
-                            type: 'package',
-                            data:{
-                                createcontainer: true,
-                                url: 'lastweek'
-                            }
                         }
+//                        .{
+//                            type: 'package',
+//                            data:{
+//                                createcontainer: true,
+//                                url: 'lastweek'
+//                            }
+//                        }
                     ]
                 }
             ]

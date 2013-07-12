@@ -1,4 +1,5 @@
 function PageBuilder(settings) {
+    console.debug('pagebuilder')
     this.settings = {
         url: undefined,
         json: {},
@@ -11,6 +12,7 @@ function PageBuilder(settings) {
             $.get({
                 url: this.settings.url,
                 success: function(resp) {
+                    console.debug(resp);
                     PageBuilder.build(this.settings.container, JSON.parse(resp));
                 }.bind(this)
             });
@@ -20,6 +22,12 @@ function PageBuilder(settings) {
 
     };
     this.init();
+    $(window).on('resize', function() {
+       $('svg').each(function() {
+            var el = $(this);
+            el.attr('width', el.parent().width());
+        })
+    });
 }
 PageBuilder.build = function(container, json) {
     if (typeof json === 'undefined' || typeof json.elements === 'undefined') {
@@ -36,7 +44,7 @@ PageBuilder.render = function(container, json) {
     if (typeof renderer === 'undefined') {
         renderer = PageBuilder.extensions.default;
     }
-    renderer(container, json);
+    new renderer(container, json).render();
 };
 PageBuilder.setAttribute = function(node, attributeName, attributeValue) {
     function check(s) {
@@ -48,6 +56,12 @@ PageBuilder.setAttribute = function(node, attributeName, attributeValue) {
 };
 PageBuilder.extensions = {};
 PageBuilder.extensions.default = function(container, json) {
+    this.container = container;
+    this.json = json;
+}
+PageBuilder.extensions.default.prototype.render = function() {
+    var container = this.container;
+    var json = this.json;
     var type = document.createElement(json.type);
     PageBuilder.setAttribute(type, 'class', json.classes);
     PageBuilder.setAttribute(type, 'id', json.id);
