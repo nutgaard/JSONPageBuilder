@@ -8832,6 +8832,773 @@ if ( typeof window === "object" && typeof window.document === "object" ) {
 
 })( window );
 
+(function( $ ) {
+
+    // the pre-filter needs to re-route the url
+    $.ajaxPrefilter( function( settings, originalOptions, jqXHR ) {
+        // if fixtures are on
+        if(! $.fixture.on) {
+            return;
+        }
+
+        // add the fixture option if programmed in
+        overwrite(settings);
+
+        // if we don't have a fixture, do nothing
+        if(!settings.fixture){
+            return;
+        }
+
+        //if referencing something else, update the fixture option
+        if ( typeof settings.fixture === "string" && $.fixture[settings.fixture] ) {
+            settings.fixture = $.fixture[settings.fixture];
+        }
+
+        // if a string, we just point to the right url
+        if ( typeof settings.fixture == "string" ) {
+            var url = settings.fixture;
+
+            if (/^\/\//.test(url) ) {
+                url = steal.root.join(settings.fixture.substr(2));
+            }
+
+            settings.url = url;
+            settings.data = null;
+            settings.type = "GET";
+            if (!settings.error ) {
+                settings.error = function( xhr, error, message ) {
+                    throw "fixtures.js Error " + error + " " + message;
+                };
+            }
+
+        }else {
+
+
+            //it's a function ... add the fixture datatype so our fixture transport handles it
+            // TODO: make everything go here for timing and other fun stuff
+            settings.dataTypes.splice(0,0,"fixture")
+        }
+
+    });
+
+
+    $.ajaxTransport( "fixture", function( s, original ) {
+
+        // remove the fixture from the datatype
+        s.dataTypes.shift();
+
+        //we'll return the result of the next data type
+        var next = s.dataTypes[0],
+            timeout;
+
+        return {
+
+            send: function( headers , callback ) {
+
+                // callback after a timeout
+                timeout = setTimeout(function() {
+
+                    // get the callback data from the fixture function
+                    var response = s.fixture(original, s, headers);
+
+                    // normalize the fixture data into a response
+                    if(!$.isArray(response)){
+                        var tmp = [{}];
+                        tmp[0][next] = response
+                        response = tmp;
+                    }
+                    if(typeof response[0] != 'number'){
+                        response.unshift(200,"success")
+                    }
+
+                    // make sure we provide a response type that matches the first datatype (typically json)
+                    if(!response[2][next]){
+                        var tmp = {}
+                        tmp[next] = response[2];
+                        response[2] = tmp;
+                    }
+
+                    // pass the fixture data back to $.ajax
+                    callback.apply(null, response );
+                }, $.fixture.delay);
+            },
+
+            abort: function() {
+                clearTimeout(timeout)
+            }
+        };
+
+    });
+
+
+
+    var typeTest = /^(script|json|test|jsonp)$/,
+    // a list of 'overwrite' settings object
+        overwrites = [],
+    // checks if an overwrite matches ajax settings
+        isSimilar = function(settings, overwrite, exact){
+
+            settings = $.extend({}, settings)
+
+            for(var prop in overwrite){
+                if(prop === 'fixture'){
+
+                } else if(overwrite[prop] !== settings[prop]){
+                    return false;
+                }
+                if(exact){
+                    delete settings[prop]
+                }
+            }
+            if(exact){
+                for(var name in settings){
+                    return false
+                }
+            }
+            return true;
+        },
+    // returns the index of an overwrite function
+        find = function(settings, exact){
+            for(var i =0; i < overwrites.length; i++){
+                if(isSimilar(settings, overwrites[i], exact)){
+                    return i;
+                }
+            }
+            return -1;
+        },
+    // overwrites the settings fixture if an overwrite matches
+        overwrite = function(settings){
+            var index = find(settings);
+            if(index > -1){
+                settings.fixture = overwrites[index].fixture;
+            }
+
+        },
+        /**
+         * Makes an attempt to guess where the id is at in the url and returns it.
+         * @param {Object} settings
+         */
+            getId = function(settings){
+            var id = settings.data.id;
+
+            if(id === undefined){
+                settings.url.replace(/\/(\d+)(\/|$)/g, function(all, num){
+                    id = num;
+                });
+            }
+
+            if(id === undefined){
+                id = settings.url.replace(/\/(\w+)(\/|$)/g, function(all, num){
+                    if(num != 'update'){
+                        id = num;
+                    }
+                })
+            }
+
+            if(id === undefined){ // if still not set, guess a random number
+                id = Math.round(Math.random()*1000)
+            }
+
+            return id;
+        };
+
+    /**
+     * @class jQuery.fixture
+     * @plugin jquery/dom/fixture
+     * @download http://jmvcsite.heroku.com/pluginify?plugins[]=jquery/dom/fixture/fixture.js
+     * @test jquery/dom/fixture/qunit.html
+     * @parent dom
+     *
+     * Fixtures simulate AJAX responses by overwriting
+     * [jQuery.ajax $.ajax],
+     * [jQuery.get $.get], and
+     * [jQuery.post $.post].
+     * Instead of making a request to a server, fixtures simulate
+     * the repsonse with a file or function.
+     *
+     * They are a great technique when you want to develop JavaScript
+     * independently of the backend.
+     *
+     * ### Quick Example
+     *
+     * Instead of making a request to <code>/tasks.json</code>,
+     * $.ajax will look in <code>fixtures/tasks.json</code>.
+     * It's expected that a static <code>fixtures/tasks.json</code>
+     * file exists relative to the current page.
+     *
+     * @codestart
+     * $.ajax({url: "/tasks.json",
+	 *   dataType: "json",
+	 *   type: "get",
+	 *   fixture: "fixtures/tasks.json",
+	 *   success: myCallback});
+     * @codeend
+     *
+     * ## Using Fixtures
+     *
+     * To enable fixtures, you must add this plugin to your page and
+     * set the fixture property.
+     *
+     * The fixture property is set as ...
+     * @codestart
+     * //... a property with $.ajax
+     * $.ajax({fixture: FIXTURE_VALUE})
+     *
+     * //... a parameter in $.get and $.post
+     * $.get (  url, data, callback, type, FIXTURE_VALUE )
+     * $.post(  url, data, callback, type, FIXTURE_VALUE )
+     * @codeend
+     *
+     * ## Turning Off Fixtures
+     *
+     * To turn off fixtures, simply remove the fixture plugin from
+     *  your page.  The Ajax methods will ignore <code>FIXTURE_VALUE</code>
+     *  and revert to their normal behavior.  If you want to ignore a single
+     *  fixture, we suggest commenting it out.
+     *
+     * <div class='whisper'>
+     * PRO TIP:  Don't worry about leaving the fixture values in your source.
+     * They don't take up many characters and won't impact how jQuery makes
+     * requests.  They can be useful even after the service they simulate
+     * is created.
+     * </div>
+     *
+     * ## Types of Fixtures
+     *
+     * There are 2 types of fixtures:
+     *   - __Static__ - the response is in a file.
+     *   - __Dynamic__ - the response is generated by a function.
+     *
+     * There are different ways to lookup static and dynamic fixtures.
+     *
+     * ### Static Fixtures
+     *
+     * Static fixture locations can be calculated:
+     *
+     *     // looks in test/fixtures/tasks/1.get
+     *     $.ajax({type:"get",
+	 *            url: "tasks/1", 
+	 *            fixture: true})
+     *
+     * Or provided:
+     *
+     *
+     * // looks in fixtures/tasks1.json relative to page
+     *     $.ajax({type:"get",
+	 *            url: "tasks/1", 
+	 *            fixture: "fixtures/task1.json"})
+     *
+     *     // looks in fixtures/tasks1.json relative to jmvc root
+     *     // this assumes you are using steal
+     *     $.ajax({type:"get",
+	 *            url: "tasks/1", 
+	 *            fixture: "//fixtures/task1.json"})`
+     *
+     *
+     * <div class='whisper'>
+     *   PRO TIP: Use provided fixtures.  It's easier to understand what it is going.
+     *   Also, create a fixtures folder in your app to hold your fixtures.
+     * </div>
+     *
+     * ### Dynamic Fixtures
+     *
+     * Dynamic Fixtures are functions that return the arguments the $.ajax callbacks
+     * (<code>beforeSend</code>, <code>success</code>, <code>complete</code>,
+     * <code>error</code>) expect.
+     *
+     * For example, the "<code>success</code>" of a json request is called with
+     * <code>[data, textStatus, XMLHttpRequest].
+     *
+     * There are 2 ways to lookup dynamic fixtures. They can provided:
+     *
+     *     //just use a function as the fixture property
+     *     $.ajax({
+	 *       type:     "get", 
+	 *       url:      "tasks",
+	 *       data:     {id: 5},
+	 *       dataType: "json",
+	 *       fixture: function( settings, callbackType ) {
+	 *         var xhr = {responseText: "{id:"+settings.data.id+"}"}
+	 *         switch(callbackType){
+	 *           case "success": 
+	 *             return [{id: settings.data.id},"success",xhr]
+	 *           case "complete":
+	 *             return [xhr,"success"]
+	 *         }
+	 *       }
+	 *     })
+     *
+     * Or found by name on $.fixture:
+     *
+     *     // add your function on $.fixture
+     *     // We use -FUNC by convention
+     *     $.fixture["-myGet"] = function(settings, cbType){...}
+     *
+     *     // reference it
+     *     $.ajax({
+	 *       type:"get", 
+	 *       url: "tasks/1", 
+	 *       dataType: "json", 
+	 *       fixture: "-myGet"})
+     *
+     * <p>Dynamic fixture functions are called with:</p>
+     * <ul>
+     * <li> settings - the settings data passed to <code>$.ajax()</code>
+     * <li> calbackType - the type of callback about to be called:
+     *  <code>"beforeSend"</code>, <code>"success"</code>, <code>"complete"</code>,
+     *    <code>"error"</code></li>
+     * </ul>
+     * and should return an array of arguments for the callback.<br/><br/>
+     * <div class='whisper'>PRO TIP:
+     * Dynamic fixtures are awesome for performance testing.  Want to see what
+     * 10000 files does to your app's performance?  Make a fixture that returns 10000 items.
+     *
+     * What to see what the app feels like when a request takes 5 seconds to return?  Set
+     * [jQuery.fixture.delay] to 5000.
+     * </div>
+     *
+     * ## Helpers
+     *
+     * The fixture plugin comes with a few ready-made dynamic fixtures and
+     * fixture helpers:</p>
+     *
+     * <ul>
+     * <li>[jQuery.fixture.make] - creates fixtures for findAll, findOne.</li>
+     * <li>[jQuery.fixture.-restCreate] - a fixture for restful creates.</li>
+     * <li>[jQuery.fixture.-restDestroy] - a fixture for restful updates.</li>
+     * <li>[jQuery.fixture.-restUpdate] - a fixture for restful destroys.</li>
+     * </ul>
+     *
+     * @demo jquery/dom/fixture/fixture.html
+     * @constructor
+     * Takes an ajax settings and returns a url to look for a fixture.  Overwrite this if you want a custom lookup method.
+     * @param {Object} settings
+     * @return {String} the url that will be used for the fixture
+     */
+    $.fixture = function( settings , fixture) {
+        // if we provide a fixture ...
+        if(fixture !== undefined){
+            if(typeof settings == 'string'){
+                // handle url strings
+                settings  ={
+                    url : settings
+                };
+            }
+
+            //handle removing.  An exact match if fixture was provided, otherwise, anything similar
+            var index = find(settings, !!fixture);
+            if(index >= -1){
+                overwrites.splice(index,1)
+            }
+            if(fixture == null){
+                return
+            }
+
+            settings.fixture = fixture;
+            overwrites.push(settings)
+            return;
+        }
+
+
+        var url = settings.url,
+            match, left, right;
+        url = url.replace(/%2F/g, "~").replace(/%20/g, "_");
+
+        if ( settings.data && settings.processData && typeof settings.data !== "string" ) {
+            settings.data = jQuery.param(settings.data);
+        }
+
+
+        if ( settings.data && settings.type.toLowerCase() == "get" ) {
+            url += ($.String.include(url, '?') ? '&' : '?') + settings.data;
+        }
+
+        match = url.match(/^(?:https?:\/\/[^\/]*)?\/?([^\?]*)\??(.*)?/);
+        left = match[1];
+
+        right = settings.type ? '.' + settings.type.toLowerCase() : '.post';
+        if ( match[2] ) {
+            left += '/';
+            right = match[2].replace(/\#|&/g, '-').replace(/\//g, '~') + right;
+        }
+        return left + right;
+    };
+
+    $.extend($.fixture, {
+        /**
+         * Provides a rest update fixture function
+         */
+        "-restUpdate": function( settings ) {
+            return [{
+                id: getId(settings)
+            },{
+                location: settings.url+"/"+getId(settings)
+            }];
+        },
+
+        /**
+         * Provides a rest destroy fixture function
+         */
+        "-restDestroy": function( settings, cbType ) {
+            return {};
+        },
+
+        /**
+         * Provides a rest create fixture function
+         */
+        "-restCreate": function( settings, cbType ) {
+            var id = parseInt(Math.random() * 100000, 10);
+            return [{
+                id: id
+            },{
+                location: settings.url+"/"+id
+            }];
+        },
+
+        /**
+         * Used to make fixtures for findAll / findOne style requests.
+         * @codestart
+         * //makes a nested list of messages
+         * $.fixture.make(["messages","message"],1000, function(i, messages){
+		 *   return {
+		 *     subject: "This is message "+i,
+		 *     body: "Here is some text for this message",
+		 *     date: Math.floor( new Date().getTime() ),
+		 *     parentId : i < 100 ? null : Math.floor(Math.random()*i)
+		 *   }
+		 * })
+         * //uses the message fixture to return messages limited by offset, limit, order, etc.
+         * $.ajax({
+		 *   url: "messages",
+		 *   data:{ 
+		 *      offset: 100, 
+		 *      limit: 50, 
+		 *      order: ["date ASC"],
+		 *      parentId: 5},
+		 *    },
+         *    fixture: "-messages",
+         *    success: function( messages ) {  ... }
+         * });
+         * @codeend
+         * @param {Array|String} types An array of the fixture names or the singular fixture name.
+         * If an array, the first item is the plural fixture name (prefixed with -) and the second
+         * item is the singular name.  If a string, it's assumed to be the singular fixture name.  Make
+         * will simply add s to the end of it for the plural name.
+         * @param {Number} count the number of items to create
+         * @param {Function} make a function that will return json data representing the object.  The
+         * make function is called back with the id and the current array of items.
+         * @param {Function} filter (optional) a function used to further filter results. Used for to simulate
+         * server params like searchText or startDate.  The function should return true if the item passes the filter,
+         * false otherwise.  For example:
+         *
+         * @codestart
+         * function(item, settings){
+			  if(settings.data.searchText){
+				  var regex = new RegExp("^"+settings.data.searchText)
+				  return regex.test(item.name);
+		      }
+		 * }
+         * @codeend
+         */
+        make: function( types, count, make, filter ) {
+            if(typeof types === "string"){
+                types = [types+"s",types ]
+            }
+            // make all items
+            var items = ($.fixture["~" + types[0]] = []), // TODO: change this to a hash
+                findOne = function(id){
+                    for ( var i = 0; i < items.length; i++ ) {
+                        if ( id == items[i].id ) {
+                            return items[i];
+                        }
+                    }
+                };
+
+            for ( var i = 0; i < (count); i++ ) {
+                //call back provided make
+                var item = make(i, items);
+
+                if (!item.id ) {
+                    item.id = i;
+                }
+                items.push(item);
+            }
+            //set plural fixture for findAll
+            $.fixture["-" + types[0]] = function( settings ) {
+
+                //copy array of items
+                var retArr = items.slice(0);
+
+                //sort using order
+                //order looks like ["age ASC","gender DESC"]
+                $.each((settings.data.order || []).slice(0).reverse(), function( i, name ) {
+                    var split = name.split(" ");
+                    retArr = retArr.sort(function( a, b ) {
+                        if ( split[1].toUpperCase() !== "ASC" ) {
+                            if( a[split[0]] < b[split[0]] ) {
+                                return 1;
+                            } else if(a[split[0]] == b[split[0]]){
+                                return 0
+                            } else {
+                                return -1;
+                            }
+                        }
+                        else {
+                            if( a[split[0]] < b[split[0]] ) {
+                                return -1;
+                            } else if(a[split[0]] == b[split[0]]){
+                                return 0
+                            } else {
+                                return 1;
+                            }
+                        }
+                    });
+                });
+
+                //group is just like a sort
+                $.each((settings.data.group || []).slice(0).reverse(), function( i, name ) {
+                    var split = name.split(" ");
+                    retArr = retArr.sort(function( a, b ) {
+                        return a[split[0]] > b[split[0]];
+                    });
+                });
+
+
+                var offset = parseInt(settings.data.offset, 10) || 0,
+                    limit = parseInt(settings.data.limit, 10) || (count - offset),
+                    i = 0;
+
+                //filter results if someone added an attr like parentId
+                for ( var param in settings.data ) {
+                    i=0;
+                    if ( settings.data[param] && // don't do this if the value of the param is null (ignore it)
+                        (param.indexOf("Id") != -1 || param.indexOf("_id") != -1) ) {
+                        while ( i < retArr.length ) {
+                            if ( settings.data[param] != retArr[i][param] ) {
+                                retArr.splice(i, 1);
+                            } else {
+                                i++;
+                            }
+                        }
+                    }
+                }
+
+
+                if( filter ) {
+                    i = 0;
+                    while (i < retArr.length) {
+                        if (!filter(retArr[i], settings)) {
+                            retArr.splice(i, 1);
+                        } else {
+                            i++;
+                        }
+                    }
+                }
+
+                //return data spliced with limit and offset
+                return [{
+                    "count": retArr.length,
+                    "limit": settings.data.limit,
+                    "offset": settings.data.offset,
+                    "data": retArr.slice(offset, offset + limit)
+                }];
+            };
+            // findOne
+            $.fixture["-" + types[1]] = function( settings ) {
+                return [findOne(settings.data.id)];
+            };
+            // update
+            $.fixture["-" + types[1]+"Update"] = function( settings, cbType ) {
+                var id = getId(settings);
+
+                // TODO: make it work with non-linear ids ..
+                $.extend(findOne(id), settings.data);
+                return $.fixture["-restUpdate"](settings, cbType)
+            };
+            $.fixture["-" + types[1]+"Destroy"] = function( settings, cbType ) {
+                var id = getId(settings);
+                for(var i = 0; i < items.length; i ++ ){
+                    if(items[i].id == id){
+                        items.splice(i, 1);
+                        break;
+                    }
+                }
+
+                // TODO: make it work with non-linear ids ..
+                $.extend(findOne(id), settings.data);
+                return $.fixture["-restDestroy"](settings, cbType)
+            };
+            $.fixture["-" + types[1]+"Create"] = function( settings, cbType ) {
+                var item = make(items.length, items);
+                $.extend(item, settings.data);
+
+                if(!item.id){
+                    item.id = items.length;
+                }
+
+                items.push(item);
+                return $.fixture["-restCreate"](settings, cbType)
+            };
+        },
+        /**
+         * Use $.fixture.xhr to create an object that looks like an xhr object.
+         *
+         * ## Example
+         *
+         * The following example shows how the -restCreate fixture uses xhr to return
+         * a simulated xhr object:
+         * @codestart
+         * "-restCreate" : function( settings, cbType ) {
+		 *   switch(cbType){
+		 *     case "success": 
+		 *       return [
+		 *         {id: parseInt(Math.random()*1000)}, 
+		 *         "success", 
+		 *         $.fixture.xhr()];
+		 *     case "complete":
+		 *       return [ 
+		 *         $.fixture.xhr({
+		 *           getResponseHeader: function() { 
+		 *             return settings.url+"/"+parseInt(Math.random()*1000);
+		 *           }
+		 *         }),
+		 *         "success"];
+		 *   }
+		 * }
+         * @codeend
+         * @param {Object} [xhr] properties that you want to overwrite
+         * @return {Object} an object that looks like a successful XHR object.
+         */
+        xhr: function( xhr ) {
+            return $.extend({}, {
+                abort: $.noop,
+                getAllResponseHeaders: function() {
+                    return "";
+                },
+                getResponseHeader: function() {
+                    return "";
+                },
+                open: $.noop,
+                overrideMimeType: $.noop,
+                readyState: 4,
+                responseText: "",
+                responseXML: null,
+                send: $.noop,
+                setRequestHeader: $.noop,
+                status: 200,
+                statusText: "OK"
+            }, xhr);
+        },
+        /**
+         * @attribute on
+         * On lets you programatically turn off fixtures.  This is mostly used for testing.
+         *
+         *     $.fixture.on = false
+         *     Task.findAll({}, function(){
+		 *       $.fixture.on = true;
+		 *     })
+         */
+        on : true
+    });
+    /**
+     * @attribute delay
+     * Sets the delay in milliseconds between an ajax request is made and
+     * the success and complete handlers are called.  This only sets
+     * functional fixtures.  By default, the delay is 200ms.
+     * @codestart
+     * steal.plugins('jquery/dom/fixtures').then(function(){
+	 *   $.fixture.delay = 1000;
+	 * })
+     * @codeend
+     */
+    $.fixture.delay = 200;
+
+    $.fixture["-handleFunction"] = function( settings ) {
+        if ( typeof settings.fixture === "string" && $.fixture[settings.fixture] ) {
+            settings.fixture = $.fixture[settings.fixture];
+        }
+        if ( typeof settings.fixture == "function" ) {
+            setTimeout(function() {
+                if ( settings.success ) {
+                    settings.success.apply(null, settings.fixture(settings, "success"));
+                }
+                if ( settings.complete ) {
+                    settings.complete.apply(null, settings.fixture(settings, "complete"));
+                }
+            }, $.fixture.delay);
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     *  @add jQuery
+     */
+    $.
+    /**
+     * Adds a fixture param.
+     * @param {Object} url
+     * @param {Object} data
+     * @param {Object} callback
+     * @param {Object} type
+     * @param {Object} fixture
+     */
+    get = function( url, data, callback, type, fixture ) {
+        // shift arguments if data argument was ommited
+        if ( jQuery.isFunction(data) ) {
+            if(!typeTest.test(type||"")){
+                fixture = type;
+                type = callback;
+            }
+            callback = data;
+            data = null;
+        }
+        if ( jQuery.isFunction(data) ) {
+            fixture = type;
+            type = callback;
+            callback = data;
+            data = null;
+        }
+
+        return jQuery.ajax({
+            type: "GET",
+            url: url,
+            data: data,
+            success: callback,
+            dataType: type,
+            fixture: fixture
+        });
+    };
+
+    $.
+    /**
+     * Adds a fixture param.
+     * @param {Object} url
+     * @param {Object} data
+     * @param {Object} callback
+     * @param {Object} type
+     * @param {Object} fixture
+     */
+        post = function( url, data, callback, type, fixture ) {
+        if ( jQuery.isFunction(data) ) {
+            if(!typeTest.test(type||"")){
+                fixture = type;
+                type = callback;
+            }
+            callback = data;
+            data = {};
+        }
+
+        return jQuery.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: callback,
+            dataType: type,
+            fixture: fixture
+        });
+    };
+})(jQuery)
 /* ===================================================
  * bootstrap-transition.js v2.3.2
  * http://twitter.github.com/bootstrap/javascript.html#transitions
@@ -13025,11 +13792,11 @@ if ( typeof window === "object" && typeof window.document === "object" ) {
     };
 }(this));
 $.get = function(request) {
-    var req = $.extend({type: 'GET'}, request);
+    var req = $.extend({type: 'GET',fixture:Fixtures.page}, request);
     return $.ajax(req);
 }
 $.post = function(request) {
-    var req = $.extend({type: 'POST'}, request);
+    var req = $.extend({type: 'POST',fixture:Fixtures.page}, request);
     return $.ajax(req);
 }
 function Fixtures(url, type) {
@@ -13042,17 +13809,24 @@ function Fixtures(url, type) {
                 {
                     type: 'div',
                     classes: 'hero-unit',
-                    elements:[
+                    elements: [
                         {
                             type: 'h1',
-                            data:{
+                            elements: [
+                                {
+                                    type: 'p',
+                                    data: {
+                                        innerHTML: 'Test'
+                                    }
+                                }
+                            ],
+                            data: {
                                 innerHTML: 'JPB - JSONPageBuilder'
                             }
-
                         },
                         {
                             type: 'p',
-                            data:{
+                            data: {
                                 innerHTML: 'A lightweight and small framework for defining html in json'
                             }
                         }
@@ -13060,50 +13834,50 @@ function Fixtures(url, type) {
                 },
                 {
                     type: 'div',
-                    classes: 'row-fluid',
+                    classes: 'row',
                     id: '',
-                    elements:[
+                    elements: [
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['ICWThingy']
+                            data: {
+                                graphOf: ['ICWThingy']
                             }
                         },
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['TSATCalculator']
+                            data: {
+                                graphOf: ['TSATCalculator']
                             }
                         },
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['ICWThingy', 'TSATCalculator']
+                            data: {
+                                graphOf: ['ICWThingy', 'TSATCalculator']
                             }
                         }
                     ]
                 },
                 {
                     type: 'div',
-                    classes: 'row-fluid',
+                    classes: 'row',
                     id: '',
-                    elements:[
+                    elements: [
                         {
                             type: 'percentileTable',
                             classes: '',
                             id: '',
-                            data:{
+                            data: {
                                 percentiles: {
-                                    of:['ICWThingy', 'TSATCalculator'],
+                                    of: ['ICWThingy', 'TSATCalculator'],
                                     values: [100, 90, 80, 0],
-                                    limits:{
-                                        'ICWThingy': [10, 10, 10, 10],
+                                    limits: {
+                                        'ICWThingy': [11, 10, 10, 10],
                                         'TSATCalculator': [10, 10, 10, 10]
                                     }
                                 },
@@ -13118,7 +13892,7 @@ function Fixtures(url, type) {
             ]
         };
     }
-    this.getLastWeekJSON = function(){
+    this.getLastWeekJSON = function() {
         return {url: url};
     }
     this.getLast2WeeksJSON = function() {
@@ -13129,37 +13903,37 @@ function Fixtures(url, type) {
             name: 'ICWThingy',
             xkey: 'timestamp',
             ykey: 'duration',
-            data:[
+            data: [
                 {
-                    timestamp:  new Date(0).getMilliseconds(),
+                    timestamp: new Date(0).getMilliseconds(),
                     duration: 1
                 },
                 {
-                    timestamp:  new Date(1).getMilliseconds(),
+                    timestamp: new Date(1).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(2).getMilliseconds(),
+                    timestamp: new Date(2).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(3).getMilliseconds(),
+                    timestamp: new Date(3).getMilliseconds(),
                     duration: 3
                 },
                 {
-                    timestamp:  new Date(4).getMilliseconds(),
+                    timestamp: new Date(4).getMilliseconds(),
                     duration: 5
                 },
                 {
-                    timestamp:  new Date(5).getMilliseconds(),
+                    timestamp: new Date(5).getMilliseconds(),
                     duration: 9
                 },
                 {
-                    timestamp:  new Date(6).getMilliseconds(),
+                    timestamp: new Date(6).getMilliseconds(),
                     duration: 10
                 },
                 {
-                    timestamp:  new Date(7).getMilliseconds(),
+                    timestamp: new Date(7).getMilliseconds(),
                     duration: 1
                 }
             ]
@@ -13170,46 +13944,46 @@ function Fixtures(url, type) {
             name: 'TSATCalculator',
             xkey: 'timestamp',
             ykey: 'duration',
-            data:[
+            data: [
                 {
-                    timestamp:  new Date(0).getMilliseconds(),
+                    timestamp: new Date(0).getMilliseconds(),
                     duration: 1
                 },
                 {
-                    timestamp:  new Date(10).getMilliseconds(),
+                    timestamp: new Date(10).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(52).getMilliseconds(),
+                    timestamp: new Date(52).getMilliseconds(),
                     duration: 5
                 },
                 {
-                    timestamp:  new Date(32).getMilliseconds(),
+                    timestamp: new Date(32).getMilliseconds(),
                     duration: 9
                 },
                 {
-                    timestamp:  new Date(46).getMilliseconds(),
+                    timestamp: new Date(46).getMilliseconds(),
                     duration: 50
                 },
                 {
-                    timestamp:  new Date(51).getMilliseconds(),
+                    timestamp: new Date(51).getMilliseconds(),
                     duration: 90
                 },
                 {
-                    timestamp:  new Date(6).getMilliseconds(),
+                    timestamp: new Date(6).getMilliseconds(),
                     duration: 10
                 },
                 {
-                    timestamp:  new Date(57).getMilliseconds(),
+                    timestamp: new Date(57).getMilliseconds(),
                     duration: 11
                 }
             ]
         }
     }
 }
-Fixtures.prototype.getResponse = function(){
+Fixtures.prototype.getResponse = function(settings) {
     var json = {};
-    switch (this.url){
+    switch (this.url) {
         case 'last24h':
             json = this.getLast24hJSON();
             break;
@@ -13226,11 +14000,12 @@ Fixtures.prototype.getResponse = function(){
             json = this.getTSATCalculatorData();
             break;
         default:
-            json = {error: '404'};
+            delete settings.fixture;
+            json = $.ajax(settings);
     }
     return JSON.stringify(json);
 }
-Fixtures.page = function (settings){
+Fixtures.page = function(settings) {
     return new Fixtures(settings.url, settings.type).getResponse(settings);
 }
 
@@ -13239,64 +14014,60 @@ function PageBuilder(settings) {
         url: undefined,
         json: {},
         container: $('body')
-    }
+    };
     this.settings = $.extend(this.settings, settings);
 
     this.init = function() {
-        if (typeof this.settings.url !== 'undefined'){
+        if (typeof this.settings.url !== 'undefined') {
             $.get({
                 url: this.settings.url,
-                success: function(resp){
+                success: function(resp) {
                     PageBuilder.build(this.settings.container, JSON.parse(resp));
-                }.bind(this),
-                fixture:Fixtures.page
+                }.bind(this)
             });
-        }else {
+        } else {
             PageBuilder.build(this.container, this.json);
         }
 
-    }
+    };
     this.init();
 }
 PageBuilder.build = function(container, json) {
-    if (typeof json == 'undefined' || typeof json.elements == 'undefined'){
+    if (typeof json === 'undefined' || typeof json.elements === 'undefined') {
         return;
     }
-    for (var childId = 0; childId < json.elements.length; childId++){
+    for (var childId = 0; childId < json.elements.length; childId++) {
         var child = json.elements[childId];
         PageBuilder.render(container, child);
     }
 
-}
-PageBuilder.render = function(container, json){
+};
+PageBuilder.render = function(container, json) {
     var renderer = PageBuilder.extensions[json.type];
-    if (typeof renderer == 'undefined'){
+    if (typeof renderer === 'undefined') {
         renderer = PageBuilder.extensions.default;
     }
     renderer(container, json);
-}
-PageBuilder.setAttribute = function(node, attributeName, attributeValue){
-    function check(s){
+};
+PageBuilder.setAttribute = function(node, attributeName, attributeValue) {
+    function check(s) {
         return typeof s !== 'undefined' && s.toString().length > 0;
     }
-    if (typeof node !== 'undefined' && check(attributeName) && check(attributeValue)){
+    if (typeof node !== 'undefined' && check(attributeName) && check(attributeValue)) {
         node.setAttribute(attributeName, attributeValue);
     }
-}
+};
 PageBuilder.extensions = {};
-PageBuilder.extensions.default = function (container, json){
-    var type = document.createElement(json.type)
+PageBuilder.extensions.default = function(container, json) {
+    var type = document.createElement(json.type);
     PageBuilder.setAttribute(type, 'class', json.classes);
     PageBuilder.setAttribute(type, 'id', json.id);
-    if (typeof json.data !== 'undefined' && typeof json.data.innerHTML !== 'undefined'){
+    if (typeof json.data !== 'undefined' && typeof json.data.innerHTML !== 'undefined') {
         type.innerHTML = json.data.innerHTML;
     }
     container.append(type);
     PageBuilder.build($(type), json);
-}
-
-
-
+};
 (function() {
     var graph = function(container, json) {
         graph.render(container, json);
@@ -13313,7 +14084,7 @@ PageBuilder.extensions.default = function (container, json){
 (function() {
     var percentileTable = function(container, json){
         percentileTable.render(container, json);
-    }
+    };
     percentileTable.render = function(container, json){
         var table = document.createElement('table');
         PageBuilder.setAttribute(table, 'class', json.data.tablestyle);
@@ -13374,12 +14145,11 @@ PageBuilder.extensions.default = function (container, json){
                         td.html(tdData);
                     }
                     percentileTable.percentileClass(tr, json.data.percentiles.limits[resp.name]);
-                },
-                fixture:Fixtures.page
+                }
             });
         }
         container.html(table.outerHTML);
-    }
+    };
     percentileTable.calculatePercentile = function(ydata, percentile){
         var realInd = percentile/100*(ydata.length-1);
         var ind = Math.round(realInd);
@@ -13395,7 +14165,7 @@ PageBuilder.extensions.default = function (container, json){
             ans = "0"+ans;
         }
         return ans;
-    }
+    };
     percentileTable.prepareJSON = function(d){
         var ykey = d.ykey;
         var data = [];
@@ -13404,7 +14174,7 @@ PageBuilder.extensions.default = function (container, json){
         }
         var o = data.sort(function(a,b){return a-b});
         return o;
-    }
+    };
     percentileTable.percentileClass = function(row, limits) {
         var max = -1;
         var ind = 0;
@@ -13416,7 +14186,7 @@ PageBuilder.extensions.default = function (container, json){
             }
         });
         row.addClass('success');
-    }
+    };
     PageBuilder.extensions.percentileTable = percentileTable;
 })();
 $(document).ready(function() {
@@ -13424,13 +14194,4 @@ $(document).ready(function() {
         url: 'last24h',
         container: $('.applicationcontainer')
     })
-
-
-
-//    $.get({url: 'last24h', dataType: 'json', type: 'get', success: buildPage, fixture:Fixtures.page});
-//
-//    function buildPage(json) {
-//        var json = JSON.parse(json);
-//        PageBuilder.build($('.applicationcontainer'), json);
-//    }
 });
