@@ -8,17 +8,24 @@ function Fixtures(url, type) {
                 {
                     type: 'div',
                     classes: 'hero-unit',
-                    elements:[
+                    elements: [
                         {
                             type: 'h1',
-                            data:{
+                            elements: [
+                                {
+                                    type: 'p',
+                                    data: {
+                                        innerHTML: 'Test'
+                                    }
+                                }
+                            ],
+                            data: {
                                 innerHTML: 'JPB - JSONPageBuilder'
                             }
-
                         },
                         {
                             type: 'p',
-                            data:{
+                            data: {
                                 innerHTML: 'A lightweight and small framework for defining html in json'
                             }
                         }
@@ -28,29 +35,29 @@ function Fixtures(url, type) {
                     type: 'div',
                     classes: 'row-fluid',
                     id: '',
-                    elements:[
+                    elements: [
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['ICWThingy']
+                            data: {
+                                graphOf: ['ICWThingy']
                             }
                         },
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['TSATCalculator']
+                            data: {
+                                graphOf: ['TSATCalculator']
                             }
                         },
                         {
                             type: 'graph',
                             classes: 'span4',
                             id: '',
-                            data:{
-                                graphOf:['ICWThingy', 'TSATCalculator']
+                            data: {
+                                graphOf: ['ICWThingy', 'TSATCalculator']
                             }
                         }
                     ]
@@ -59,17 +66,17 @@ function Fixtures(url, type) {
                     type: 'div',
                     classes: 'row-fluid',
                     id: '',
-                    elements:[
+                    elements: [
                         {
                             type: 'percentileTable',
                             classes: '',
                             id: '',
-                            data:{
+                            data: {
                                 percentiles: {
-                                    of:['ICWThingy', 'TSATCalculator'],
+                                    of: ['ICWThingy', 'TSATCalculator'],
                                     values: [100, 90, 80, 0],
-                                    limits:{
-                                        'ICWThingy': [10, 10, 10, 10],
+                                    limits: {
+                                        'ICWThingy': [11, 10, 10, 10],
                                         'TSATCalculator': [10, 10, 10, 10]
                                     }
                                 },
@@ -84,7 +91,7 @@ function Fixtures(url, type) {
             ]
         };
     }
-    this.getLastWeekJSON = function(){
+    this.getLastWeekJSON = function() {
         return {url: url};
     }
     this.getLast2WeeksJSON = function() {
@@ -95,37 +102,37 @@ function Fixtures(url, type) {
             name: 'ICWThingy',
             xkey: 'timestamp',
             ykey: 'duration',
-            data:[
+            data: [
                 {
-                    timestamp:  new Date(0).getMilliseconds(),
+                    timestamp: new Date(0).getMilliseconds(),
                     duration: 1
                 },
                 {
-                    timestamp:  new Date(1).getMilliseconds(),
+                    timestamp: new Date(1).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(2).getMilliseconds(),
+                    timestamp: new Date(2).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(3).getMilliseconds(),
+                    timestamp: new Date(3).getMilliseconds(),
                     duration: 3
                 },
                 {
-                    timestamp:  new Date(4).getMilliseconds(),
+                    timestamp: new Date(4).getMilliseconds(),
                     duration: 5
                 },
                 {
-                    timestamp:  new Date(5).getMilliseconds(),
+                    timestamp: new Date(5).getMilliseconds(),
                     duration: 9
                 },
                 {
-                    timestamp:  new Date(6).getMilliseconds(),
+                    timestamp: new Date(6).getMilliseconds(),
                     duration: 10
                 },
                 {
-                    timestamp:  new Date(7).getMilliseconds(),
+                    timestamp: new Date(7).getMilliseconds(),
                     duration: 1
                 }
             ]
@@ -136,46 +143,46 @@ function Fixtures(url, type) {
             name: 'TSATCalculator',
             xkey: 'timestamp',
             ykey: 'duration',
-            data:[
+            data: [
                 {
-                    timestamp:  new Date(0).getMilliseconds(),
+                    timestamp: new Date(0).getMilliseconds(),
                     duration: 1
                 },
                 {
-                    timestamp:  new Date(10).getMilliseconds(),
+                    timestamp: new Date(10).getMilliseconds(),
                     duration: 2
                 },
                 {
-                    timestamp:  new Date(52).getMilliseconds(),
+                    timestamp: new Date(52).getMilliseconds(),
                     duration: 5
                 },
                 {
-                    timestamp:  new Date(32).getMilliseconds(),
+                    timestamp: new Date(32).getMilliseconds(),
                     duration: 9
                 },
                 {
-                    timestamp:  new Date(46).getMilliseconds(),
+                    timestamp: new Date(46).getMilliseconds(),
                     duration: 50
                 },
                 {
-                    timestamp:  new Date(51).getMilliseconds(),
+                    timestamp: new Date(51).getMilliseconds(),
                     duration: 90
                 },
                 {
-                    timestamp:  new Date(6).getMilliseconds(),
+                    timestamp: new Date(6).getMilliseconds(),
                     duration: 10
                 },
                 {
-                    timestamp:  new Date(57).getMilliseconds(),
+                    timestamp: new Date(57).getMilliseconds(),
                     duration: 11
                 }
             ]
         }
     }
 }
-Fixtures.prototype.getResponse = function(){
+Fixtures.prototype.getResponse = function() {
     var json = {};
-    switch (this.url){
+    switch (this.url) {
         case 'last24h':
             json = this.getLast24hJSON();
             break;
@@ -196,6 +203,6 @@ Fixtures.prototype.getResponse = function(){
     }
     return JSON.stringify(json);
 }
-Fixtures.page = function (settings){
+Fixtures.page = function(settings) {
     return new Fixtures(settings.url, settings.type).getResponse(settings);
 }
