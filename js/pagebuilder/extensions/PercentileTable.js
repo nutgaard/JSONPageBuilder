@@ -21,9 +21,9 @@
         thead.appendChild(tr);
         table.appendChild(thead);
 
-        for (var i = 0; i < json.data.percentileValues.length; i++){
+        for (var i = 0; i < json.data.percentiles.values.length; i++){
             var th = document.createElement('th');
-            th.innerHTML = json.data.percentileValues[i];
+            th.innerHTML = json.data.percentiles.values[i];
             PageBuilder.setAttribute(th, 'class', json.data.tabledatastyle);
 
             tr.appendChild(th);
@@ -32,8 +32,8 @@
         table.appendChild(tbody);
 
         //request table data
-        for (var rowId = 0; rowId < json.data.percentileOf.length; rowId++){
-            var rowName = json.data.percentileOf[rowId];
+        for (var rowId = 0; rowId < json.data.percentiles.of.length; rowId++){
+            var rowName = json.data.percentiles.of[rowId];
             var tr = document.createElement('tr');
             PageBuilder.setAttribute(tr, 'class', json.data.tablerowstyle);
             PageBuilder.setAttribute(tr, 'data-name', rowName);
@@ -44,10 +44,10 @@
             PageBuilder.setAttribute(td, 'class', json.data.tablecellstyle);
             tr.appendChild(td);
 
-            for (var i = 0; i < json.data.percentileValues.length; i++){
+            for (var i = 0; i < json.data.percentiles.values.length; i++){
                 var td = document.createElement('td');
                 PageBuilder.setAttribute(td, 'class', json.data.tablecellstyle);
-                PageBuilder.setAttribute(td, 'data-percentile', json.data.percentileValues[i]);
+                PageBuilder.setAttribute(td, 'data-percentile', json.data.percentiles.values[i]);
                 tr.appendChild(td);
             }
             $.get({
@@ -56,12 +56,12 @@
                     var resp = JSON.parse(resp);
                     var tr = $('tr[data-name='+resp.name+']');
                     var ydata = percentileTable.prepareJSON(resp);
-                    for (var i = 0; i < json.data.percentileValues.length; i++){
-                        var td = tr.find('td[data-percentile="'+json.data.percentileValues[i]+'"]');
-                        var tdData = percentileTable.calculatePercentile(ydata, json.data.percentileValues[i]);
+                    for (var i = 0; i < json.data.percentiles.values.length; i++){
+                        var td = tr.find('td[data-percentile="'+json.data.percentiles.values[i]+'"]');
+                        var tdData = percentileTable.calculatePercentile(ydata, json.data.percentiles.values[i]);
                         td.html(tdData);
                     }
-                    percentileTable.percentileClass(tr);
+                    percentileTable.percentileClass(tr, json.data.percentiles.limits[resp.name]);
                 },
                 fixture:Fixtures.page
             });
@@ -93,19 +93,17 @@
         var o = data.sort(function(a,b){return a-b});
         return o;
     }
-    percentileTable.percentileClass = function(row) {
+    percentileTable.percentileClass = function(row, limits) {
         var max = -1;
+        var ind = 0;
         row.children().slice(1).each(function(){
             var p = parseFloat($(this).text());
-            if (p > max){
-                max = p;
+            if (p >= limits[ind++]){
+                row.addClass('error');
+                return;
             }
         });
-            if (max > 62){
-            row.addClass('error');
-        }else {
-            row.addClass('success');
-        }
+        row.addClass('success');
     }
     PageBuilder.extensions.percentileTable = percentileTable;
 })();

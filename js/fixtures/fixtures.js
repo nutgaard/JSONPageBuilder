@@ -65,8 +65,14 @@ function Fixtures(url, type) {
                             classes: '',
                             id: '',
                             data:{
-                                percentileOf:['ICWThingy', 'TSATCalculator'],
-                                percentileValues: [100, 90, 80, 0],
+                                percentiles: {
+                                    of:['ICWThingy', 'TSATCalculator'],
+                                    values: [100, 90, 80, 0],
+                                    limits:{
+                                        'ICWThingy': [10, 10, 10, 10],
+                                        'TSATCalculator': [10, 10, 10, 10]
+                                    }
+                                },
                                 tablestyle: 'table table-striped',
                                 tableheaderstyle: '',
                                 tablerowstyle: '',
