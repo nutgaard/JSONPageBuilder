@@ -12,8 +12,7 @@ function PageBuilder(settings) {
                 url: this.settings.url,
                 success: function(resp){
                     PageBuilder.build(this.settings.container, JSON.parse(resp));
-                }.bind(this),
-                fixture:Fixtures.page
+                }.bind(this)
             });
         }else {
             PageBuilder.build(this.container, this.json);

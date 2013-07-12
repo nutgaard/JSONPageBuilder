@@ -62,8 +62,7 @@
                         td.html(tdData);
                     }
                     percentileTable.percentileClass(tr, json.data.percentiles.limits[resp.name]);
-                },
-                fixture:Fixtures.page
+                }
             });
         }
         container.html(table.outerHTML);

@@ -180,7 +180,7 @@ function Fixtures(url, type) {
         }
     }
 }
-Fixtures.prototype.getResponse = function() {
+Fixtures.prototype.getResponse = function(settings) {
     var json = {};
     switch (this.url) {
         case 'last24h':
@@ -199,7 +199,8 @@ Fixtures.prototype.getResponse = function() {
             json = this.getTSATCalculatorData();
             break;
         default:
-            json = {error: '404'};
+            delete settings.fixture;
+            json = $.ajax(settings);
     }
     return JSON.stringify(json);
 }
