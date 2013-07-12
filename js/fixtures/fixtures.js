@@ -85,6 +85,13 @@ function Fixtures(url, type) {
                                 tablerowstyle: '',
                                 tablecellstyle: ''
                             }
+                        },
+                        {
+                            type: 'package',
+                            data:{
+                                createcontainer: true,
+                                url: 'lastweek'
+                            }
                         }
                     ]
                 }
@@ -92,10 +99,37 @@ function Fixtures(url, type) {
         };
     }
     this.getLastWeekJSON = function() {
-        return {url: url};
+        return {
+            elements:[
+                {
+                    type: 'h1',
+                    data:{
+                        innerHTML: 'Loaded after everything else'
+                    },
+                    elements:[
+                        {
+                            type: 'package',
+                            data:{
+                                createcontainer: true,
+                                url: 'last2weeks'
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
     }
     this.getLast2WeeksJSON = function() {
-        return {url: url};
+        return {
+            elements:[
+                {
+                    type: 'h2',
+                    data:{
+                        innerHTML: 'SubSub'
+                    }
+                }
+            ]
+        };
     }
     this.getICWThingyData = function() {
         return {

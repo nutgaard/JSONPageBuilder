@@ -1,5 +1,26 @@
 (function() {
     var percentileTable = function(container, json){
+        /*
+         {
+            type: 'percentileTable',
+            classes: '',
+            id: '',
+            data: {
+                percentiles: {
+                    of: ['ICWThingy', 'TSATCalculator'],
+                    values: [100, 90, 80, 0],
+                    limits: {
+                        'ICWThingy': [11, 10, 10, 10],
+                        'TSATCalculator': [10, 10, 10, 10]
+                    }
+                },
+                tablestyle: 'table table-striped',
+                tableheaderstyle: '',
+                tablerowstyle: '',
+                tablecellstyle: ''
+            }
+         }
+         */
         percentileTable.render(container, json);
     };
     percentileTable.render = function(container, json){
