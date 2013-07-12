@@ -1,7 +1,7 @@
 (function() {
     var percentileTable = function(container, json){
         percentileTable.render(container, json);
-    }
+    };
     percentileTable.render = function(container, json){
         var table = document.createElement('table');
         PageBuilder.setAttribute(table, 'class', json.data.tablestyle);
@@ -67,7 +67,7 @@
             });
         }
         container.html(table.outerHTML);
-    }
+    };
     percentileTable.calculatePercentile = function(ydata, percentile){
         var realInd = percentile/100*(ydata.length-1);
         var ind = Math.round(realInd);
@@ -83,7 +83,7 @@
             ans = "0"+ans;
         }
         return ans;
-    }
+    };
     percentileTable.prepareJSON = function(d){
         var ykey = d.ykey;
         var data = [];
@@ -92,7 +92,7 @@
         }
         var o = data.sort(function(a,b){return a-b});
         return o;
-    }
+    };
     percentileTable.percentileClass = function(row, limits) {
         var max = -1;
         var ind = 0;
@@ -104,6 +104,6 @@
             }
         });
         row.addClass('success');
-    }
+    };
     PageBuilder.extensions.percentileTable = percentileTable;
 })();

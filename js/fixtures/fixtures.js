@@ -33,7 +33,7 @@ function Fixtures(url, type) {
                 },
                 {
                     type: 'div',
-                    classes: 'row-fluid',
+                    classes: 'row',
                     id: '',
                     elements: [
                         {
@@ -64,7 +64,7 @@ function Fixtures(url, type) {
                 },
                 {
                     type: 'div',
-                    classes: 'row-fluid',
+                    classes: 'row',
                     id: '',
                     elements: [
                         {
