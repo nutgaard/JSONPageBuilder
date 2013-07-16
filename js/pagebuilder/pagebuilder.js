@@ -1,5 +1,4 @@
 function PageBuilder(settings) {
-    console.debug('pagebuilder')
     this.settings = {
         url: undefined,
         json: {},
@@ -12,7 +11,6 @@ function PageBuilder(settings) {
             $.get({
                 url: this.settings.url,
                 success: function(resp) {
-                    console.debug(resp);
                     PageBuilder.build(this.settings.container, JSON.parse(resp));
                 }.bind(this)
             });
@@ -37,7 +35,6 @@ PageBuilder.build = function(container, json) {
         var child = json.elements[childId];
         PageBuilder.render(container, child);
     }
-
 };
 PageBuilder.render = function(container, json) {
     var renderer = PageBuilder.extensions[json.type];

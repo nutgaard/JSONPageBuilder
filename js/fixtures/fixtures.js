@@ -2,6 +2,26 @@ function Fixtures(url, type) {
     this.url = url;
     this.type = type;
 
+
+    this.getNavbar = function() {
+        return {
+            elements: [{
+                    type: 'navbar',
+                    classes: 'navbar-inverse navbar-fixed-top',
+                    data: {
+                        brand: 'Brand',
+                        links: [
+                            {href: '#last24h', text: 'Last 24 h'},
+                            {href: '#last1w', text: 'Last week'},
+                            {href: '#last2w', text: 'Last two weeks'},
+                            {href: '#realtime', text: 'Realtime'},
+                            {href: '#settings', text: 'Settings'}
+                        ]
+                    }
+                }
+            ]
+        };
+    }
     this.getLast24hJSON = function() {
         return {
             elements: [
@@ -41,7 +61,7 @@ function Fixtures(url, type) {
                             classes: 'span4',
                             id: '',
                             data: {
-                                graphOf: ['ICWThingy']
+                                graphOf: ['ICWThingy/now()-24h']
                             }
                         },
                         {
@@ -100,16 +120,16 @@ function Fixtures(url, type) {
     }
     this.getLastWeekJSON = function() {
         return {
-            elements:[
+            elements: [
                 {
                     type: 'h1',
-                    data:{
+                    data: {
                         innerHTML: 'Loaded after everything else'
                     },
-                    elements:[
+                    elements: [
                         {
                             type: 'package',
-                            data:{
+                            data: {
                                 createcontainer: true,
                                 url: 'last2weeks'
                             }
@@ -121,10 +141,10 @@ function Fixtures(url, type) {
     }
     this.getLast2WeeksJSON = function() {
         return {
-            elements:[
+            elements: [
                 {
                     type: 'h2',
-                    data:{
+                    data: {
                         innerHTML: 'SubSub'
                     }
                 }
@@ -217,7 +237,10 @@ function Fixtures(url, type) {
 Fixtures.prototype.getResponse = function(settings) {
     var json = {};
     switch (this.url) {
-        case 'last24h':
+        case 'page/navbar':
+            json = this.getNavbar();
+            break;
+        case 'page/last24h':
             json = this.getLast24hJSON();
             break;
         case 'lastweek':
