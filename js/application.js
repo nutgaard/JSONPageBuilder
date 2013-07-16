@@ -1,8 +1,10 @@
 $(document).ready(function() {
-    $.get({
+    var nav = new PageBuilder({
         url: 'page/navbar',
-        success: function(r) {
-            new PageView({model: new PageComponentCollection(JSON.parse(r)), el: 'body'})
-        }
-    })
+        container: $('body')
+    });
+    var pb = new PageBuilder({
+        url: 'page/last24h',
+        container: $('.applicationcontainer')
+    });
 });
