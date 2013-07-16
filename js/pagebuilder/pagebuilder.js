@@ -22,12 +22,6 @@ function PageBuilder(settings) {
 
     };
     this.init();
-    $(window).on('resize', function() {
-       $('svg').each(function() {
-            var el = $(this);
-            el.attr('width', el.parent().width());
-        })
-    });
 }
 PageBuilder.build = function(container, json) {
     if (typeof json === 'undefined' || typeof json.elements === 'undefined') {
