@@ -61,7 +61,7 @@ function Fixtures(url, type) {
                             classes: 'span4',
                             id: '',
                             data: {
-                                graphOf: ['ICWThingy/now()-24h']
+                                graphOf: ['ICWThingy']
                             }
                         },
                         {
