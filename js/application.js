@@ -10,5 +10,5 @@ $(document).ready(function() {
         success: function(r) {
             new PageView({model: new PageComponentCollection(JSON.parse(r)), el: '.applicationcontainer'})
         }
-    })
+    });
 });
