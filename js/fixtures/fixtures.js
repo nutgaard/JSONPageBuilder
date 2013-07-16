@@ -203,7 +203,7 @@ Fixtures.prototype.getResponse = function(settings) {
         case 'page/last24h':
             json = this.getLast24hJSON();
             break;
-        case 'page/lastweek':
+        case 'lastweek':
             json = this.getLastWeekJSON();
             break;
         case 'last2weeks':
