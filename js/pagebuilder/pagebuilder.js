@@ -1,5 +1,4 @@
 function PageBuilder(settings) {
-    console.debug('pagebuilder')
     this.settings = {
         url: undefined,
         json: {},
@@ -12,14 +11,12 @@ function PageBuilder(settings) {
             $.get({
                 url: this.settings.url,
                 success: function(resp) {
-                    console.debug(resp);
                     PageBuilder.build(this.settings.container, JSON.parse(resp));
                 }.bind(this)
             });
         } else {
             PageBuilder.build(this.container, this.json);
         }
-
     };
     this.init();
 }
@@ -52,7 +49,7 @@ PageBuilder.extensions = {};
 PageBuilder.extensions.default = function(container, json) {
     this.container = container;
     this.json = json;
-}
+};
 PageBuilder.extensions.default.prototype.render = function() {
     var container = this.container;
     var json = this.json;
