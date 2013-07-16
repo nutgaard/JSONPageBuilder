@@ -9,9 +9,10 @@ function Fixtures(url, type) {
                 type: 'navbar',
                 classes: 'navbar-inverse navbar-fixed-top',
                 data: {
-                    brand: 'Brand',
+                    brand: 'CDMS-Profile',
                     links: [
                         {href: '#last24h', text: 'Last 24 h'},
+                        {href: '#last72h', text: 'Last 72 h'},
                         {href: '#last1w', text: 'Last week'},
                         {href: '#last2w', text: 'Last two weeks'},
                         {href: '#realtime', text: 'Realtime'},
@@ -103,13 +104,13 @@ function Fixtures(url, type) {
     }
     this.getLast2WeeksJSON = function() {
         return [
-                {
-                    type: 'h2',
-                    data: {
-                        innerHTML: 'SubSub'
-                    }
+            {
+                type: 'h2',
+                data: {
+                    innerHTML: 'SubSub'
                 }
-            ];
+            }
+        ];
     }
     this.getICWThingyData = function() {
         return {
