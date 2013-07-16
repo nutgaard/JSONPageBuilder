@@ -17,15 +17,8 @@ function PageBuilder(settings) {
         } else {
             PageBuilder.build(this.container, this.json);
         }
-
     };
     this.init();
-    $(window).on('resize', function() {
-       $('svg').each(function() {
-            var el = $(this);
-            el.attr('width', el.parent().width());
-        })
-    });
 }
 PageBuilder.build = function(container, json) {
     if (typeof json === 'undefined' || typeof json.elements === 'undefined') {
@@ -55,7 +48,7 @@ PageBuilder.extensions = {};
 PageBuilder.extensions.default = function(container, json) {
     this.container = container;
     this.json = json;
-}
+};
 PageBuilder.extensions.default.prototype.render = function() {
     var container = this.container;
     var json = this.json;
