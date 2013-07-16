@@ -6,34 +6,18 @@ function Fixtures(url, type) {
     this.getNavbar = function() {
         return {
             elements: [{
-//                    type: 'navbar',
-//                    classes: 'navbar-inverse navbar-fixed-top',
-//                    data: {
-//                        brand: 'Brand',
-//                        links: [
-//                            {href: '#last24h', text: 'Last 24 h'},
-//                            {href: '#last1w', text: 'Last week'},
-//                            {href: '#last2w', text: 'Last two weeks'},
-//                            {href: '#realtime', text: 'Realtime'},
-//                            {href: '#settings', text: 'Settings'}
-//                        ]
-//                    }
-                    type: 'div',
-                    classes: 'test',
-                    elements: [
-                        {
-                            type: 'h1',
-                            data:{
-                                innerHTML: 'Hei Header'
-                            }
-                        },
-                        {
-                            type: 'p',
-                            data:{
-                                innerHTML: 'Paragraph'
-                            }
-                        },
-                    ]
+                    type: 'navbar',
+                    classes: 'navbar-inverse navbar-fixed-top',
+                    data: {
+                        brand: 'Brand',
+                        links: [
+                            {href: '#last24h', text: 'Last 24 h'},
+                            {href: '#last1w', text: 'Last week'},
+                            {href: '#last2w', text: 'Last two weeks'},
+                            {href: '#realtime', text: 'Realtime'},
+                            {href: '#settings', text: 'Settings'}
+                        ]
+                    }
                 }
             ]
         };
