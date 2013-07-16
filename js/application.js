@@ -4,5 +4,11 @@ $(document).ready(function() {
         success: function(r) {
             new PageView({model: new PageComponentCollection(JSON.parse(r)), el: 'body'})
         }
+    });
+    $.get({
+        url: 'page/last24h',
+        success: function(r) {
+            new PageView({model: new PageComponentCollection(JSON.parse(r)), el: '.applicationcontainer'})
+        }
     })
 });

@@ -18,110 +18,98 @@ function Fixtures(url, type) {
                         {href: '#settings', text: 'Settings'}
                     ]
                 }
-            },
-            {
-                type: 'h1',
-                data:{
-                    innerHTML: 'HEI'
-                }
             }
         ];
     }
     this.getLast24hJSON = function() {
-        return {
-            elements: [
-                {
-                    type: 'div',
-                    classes: 'row',
+        return [
+            {
+                type: 'div',
+                classes: 'row',
 //                    id: '',
-                    elements: [
-                        {
-                            type: 'graph',
-                            classes: 'span4',
+                elements: [
+                    {
+                        type: 'graph',
+                        classes: 'span4',
 //                            id: '',
-                            data: {
-                                graphOf: ['ICWThingy']
-                            }
-                        },
-                        {
-                            type: 'graph',
-                            classes: 'span4',
-//                            id: '',
-                            data: {
-                                graphOf: ['TSATCalculator']
-                            }
-                        },
-                        {
-                            type: 'graph',
-                            classes: 'span4',
-//                            id: '',
-                            data: {
-                                graphOf: ['ICWThingy', 'TSATCalculator']
-                            }
+                        data: {
+                            graphOf: ['ICWThingy']
                         }
-                    ]
-                },
-                {
-                    type: 'div',
-                    classes: 'row',
-//                    id: '',
-                    elements: [
-                        {
-                            type: 'percentileTable',
-                            classes: '',
-//                            id: '',
-                            data: {
-                                percentiles: {
-                                    of: ['ICWThingy', 'TSATCalculator'],
-                                    values: [100, 90, 80, 0],
-                                    limits: {
-                                        'ICWThingy': [11, 10, 10, 10],
-                                        'TSATCalculator': [10, 10, 10, 10]
-                                    }
-                                },
-                                tablestyle: 'table table-striped',
-                                tableheaderstyle: '',
-                                tablerowstyle: '',
-                                tablecellstyle: ''
-                            }
-                        }
-                    ]
-                }
-            ]
-        };
-    }
-    this.getLastWeekJSON = function() {
-        return {
-            elements: [
-                {
-                    type: 'h1',
-                    data: {
-                        innerHTML: 'Loaded after everything else'
                     },
-                    elements: [
-                        {
-                            type: 'package',
-                            data: {
-                                createcontainer: true,
-                                url: 'last2weeks'
-                            }
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            graphOf: ['TSATCalculator']
                         }
-                    ]
-                }
-            ]
-        };
+                    },
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            graphOf: ['ICWThingy', 'TSATCalculator']
+                        }
+                    }
+                ]
+            },
+            {
+                type: 'div',
+                classes: 'row',
+//                    id: '',
+                elements: [
+                    {
+                        type: 'percentileTable',
+                        classes: '',
+//                            id: '',
+                        data: {
+                            percentiles: {
+                                of: ['ICWThingy', 'TSATCalculator'],
+                                values: [100, 90, 80, 0],
+                                limits: {
+                                    'ICWThingy': [11, 10, 10, 10],
+                                    'TSATCalculator': [10, 10, 10, 10]
+                                }
+                            },
+                            tablestyle: 'table table-striped',
+                            tableheaderstyle: '',
+                            tablerowstyle: '',
+                            tablecellstyle: ''
+                        }
+                    }
+                ]
+            }
+        ];
+    };
+    this.getLastWeekJSON = function() {
+        return [
+            {
+                type: 'h1',
+                data: {
+                    innerHTML: 'Loaded after everything else'
+                },
+                elements: [
+                    {
+                        type: 'package',
+                        data: {
+                            createcontainer: true,
+                            url: 'last2weeks'
+                        }
+                    }
+                ]
+            }
+        ];
     }
     this.getLast2WeeksJSON = function() {
-        return {
-            elements: [
+        return [
                 {
                     type: 'h2',
                     data: {
                         innerHTML: 'SubSub'
                     }
                 }
-            ]
-        };
+            ];
     }
     this.getICWThingyData = function() {
         return {
