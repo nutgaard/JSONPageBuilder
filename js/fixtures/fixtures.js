@@ -6,18 +6,34 @@ function Fixtures(url, type) {
     this.getNavbar = function() {
         return {
             elements: [{
-                    type: 'navbar',
-                    classes: 'navbar-inverse navbar-fixed-top',
-                    data: {
-                        brand: 'Brand',
-                        links: [
-                            {href: '#last24h', text: 'Last 24 h'},
-                            {href: '#last1w', text: 'Last week'},
-                            {href: '#last2w', text: 'Last two weeks'},
-                            {href: '#realtime', text: 'Realtime'},
-                            {href: '#settings', text: 'Settings'}
-                        ]
-                    }
+//                    type: 'navbar',
+//                    classes: 'navbar-inverse navbar-fixed-top',
+//                    data: {
+//                        brand: 'Brand',
+//                        links: [
+//                            {href: '#last24h', text: 'Last 24 h'},
+//                            {href: '#last1w', text: 'Last week'},
+//                            {href: '#last2w', text: 'Last two weeks'},
+//                            {href: '#realtime', text: 'Realtime'},
+//                            {href: '#settings', text: 'Settings'}
+//                        ]
+//                    }
+                    type: 'div',
+                    classes: 'test',
+                    elements: [
+                        {
+                            type: 'h1',
+                            data:{
+                                innerHTML: 'Hei Header'
+                            }
+                        },
+                        {
+                            type: 'p',
+                            data:{
+                                innerHTML: 'Paragraph'
+                            }
+                        },
+                    ]
                 }
             ]
         };
@@ -25,41 +41,15 @@ function Fixtures(url, type) {
     this.getLast24hJSON = function() {
         return {
             elements: [
-//                {
-//                    type: 'div',
-//                    classes: 'hero-unit',
-//                    elements: [
-//                        {
-//                            type: 'h1',
-//                            elements: [
-//                                {
-//                                    type: 'p',
-//                                    data: {
-//                                        innerHTML: 'Test'
-//                                    }
-//                                }
-//                            ],
-//                            data: {
-//                                innerHTML: 'JPB - JSONPageBuilder'
-//                            }
-//                        },
-//                        {
-//                            type: 'p',
-//                            data: {
-//                                innerHTML: 'A lightweight and small framework for defining html in json'
-//                            }
-//                        }
-//                    ]
-//                },
                 {
                     type: 'div',
                     classes: 'row',
-                    id: '',
+//                    id: '',
                     elements: [
                         {
                             type: 'graph',
                             classes: 'span4',
-                            id: '',
+//                            id: '',
                             data: {
                                 graphOf: ['ICWThingy']
                             }
@@ -67,7 +57,7 @@ function Fixtures(url, type) {
                         {
                             type: 'graph',
                             classes: 'span4',
-                            id: '',
+//                            id: '',
                             data: {
                                 graphOf: ['TSATCalculator']
                             }
@@ -75,7 +65,7 @@ function Fixtures(url, type) {
                         {
                             type: 'graph',
                             classes: 'span4',
-                            id: '',
+//                            id: '',
                             data: {
                                 graphOf: ['ICWThingy', 'TSATCalculator']
                             }
@@ -85,12 +75,12 @@ function Fixtures(url, type) {
                 {
                     type: 'div',
                     classes: 'row',
-                    id: '',
+//                    id: '',
                     elements: [
                         {
                             type: 'percentileTable',
                             classes: '',
-                            id: '',
+//                            id: '',
                             data: {
                                 percentiles: {
                                     of: ['ICWThingy', 'TSATCalculator'],
@@ -106,13 +96,6 @@ function Fixtures(url, type) {
                                 tablecellstyle: ''
                             }
                         }
-//                        .{
-//                            type: 'package',
-//                            data:{
-//                                createcontainer: true,
-//                                url: 'lastweek'
-//                            }
-//                        }
                     ]
                 }
             ]
