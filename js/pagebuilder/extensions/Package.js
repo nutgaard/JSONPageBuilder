@@ -1,20 +1,22 @@
-PageView.extensions.package = Backbone.View.extend({
-    render: function() {
-        var container = this.$el;
-        var json = this.model.attributes;
-        if (typeof json.data.createcontainer !== 'undefined' && json.data.createcontainer === true) {
-            var newcontainer = document.createElement('div');
-            PageView.setTagAttribute(newcontainer, 'class', json.classes);
-            PageView.setTagAttribute(newcontainer, 'id', json.id);
-            container.append(newcontainer);
-            container = newcontainer;
-        }
-        var that = this;
-        $.get({
-            url: json.data.url,
-            success: function(resp) {
-                new PageView({el: container, model: new PageComponentCollection(JSON.parse(resp))});
-            }
-        });
+PageBuilder.extensions.package = function(container, json){
+    this.container = container;
+    this.json = json;
+}
+PageBuilder.extensions.package.prototype.render = function () {
+    var container = this.container;
+    var json = this.json;
+    var mycontainer = container;
+    if (typeof json.data.createcontainer !== 'undefined' && json.data.createcontainer == true){
+        var newcontainer = document.createElement('div');
+        PageBuilder.setAttribute(newcontainer, 'class', json.classes);
+        PageBuilder.setAttribute(newcontainer, 'id', json.id);
+        container.append(container);
+        container = newcontainer;
     }
-});
+    $.get({
+        url: json.data.url,
+        success: function(resp) {
+            PageBuilder.build(mycontainer, JSON.parse(resp));
+        }
+    });
+}
