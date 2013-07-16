@@ -12,7 +12,7 @@ var PageView = Backbone.View.extend({
 });
 PageView.build = function(container, element) {
     var view = PageView.extensions[element.get('type')];
-    if (typeof view === 'undefined') {
+    if (typeof renderer === 'undefined') {
         view = PageView.extensions.default;
     }
     var a = new view({el: container, model: element}).render();
