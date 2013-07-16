@@ -1,54 +1,30 @@
 PageView.extensions.graph = Backbone.View.extend({
     render: function() {
-        this.container = this.$el;
         this.svgcontainer = undefined;
         this.graphics = undefined;
         this.prev = 0;
         this.type = Math.random();
-        this.json = this.model.attributes;
-        this.series;
-        this.graphOptions = {
-            series: {
-                lines: {
-                    show: true,
-                    fill: true
-                },
-                points: {
-                    show: true
-                }
-            },
-            legend: {
-                show: true,
-            },
-            grid: {
-                hoverable: true
-            },
-            xaxis: {
-                mode: 'time'
-            },
-            tooltip: true
-        };
-        this.svgcontainer = this.createDOMStructure(this.container, this.json);
-        this.graphics = this.drawGraph(this.svgcontainer);
+        this.rerender();
         this.startUpdate();
         this.createResizeHandler();
+    },
+    rerender: function() {
+        this.svgcontainer = this.createDOMStructure(this.$el, this.model.attributes);
+        this.graphics = this.drawGraph(this.svgcontainer);
     },
     startUpdate: function() {
         setInterval(function() {
             this.prev += 1;
             if (this.type < 0.33) {
-                var data = [this.prev, Math.floor(Math.random() * 40) + 120];
+                var data = {one: Math.floor(Math.random() * 40) + 120};
             } else if (this.type < 0.66) {
-                var data = [this.prev, Math.floor(Math.random() * 40) + 120];
+                var data = {one: this.prev};
             } else {
-                var data = [this.prev, Math.sin(this.prev / Math.PI)];
+                var data = {one: Math.sin(this.prev / Math.PI)};
             }
-            this.series[0].data.push(data);
-            if (this.series[0].data.length > 50){
-                this.series[0].data.shift();
-            }
-            this.graphics = $.plot(this.graphics.getPlaceholder(), this.series, this.graphOptions);
-        }.bind(this), 500);
+            this.graphics.series.addData(data);
+            this.graphics.render();
+        }.bind(this), 100);
     },
     createResizeHandler: function() {
         var that = this;
@@ -75,21 +51,28 @@ PageView.extensions.graph = Backbone.View.extend({
             throw "No svgcontainer found";
         }
         svgcontainer.html('');
+        var palette = new Rickshaw.Color.Palette({scheme: 'classic9'});
         var height = width = svgcontainer.width();
-        
-        this.series = [{
-                data: [],
-                label: this.json.data.graphOf[0]
-        }];
-        console.debug(this.series);
-        console.debug(this.json.data.graphOptions);
-        $.extend(this.graphOptions, this.json.data.graphOptions);
-        
+        var series;
         if (typeof this.graphics !== 'undefined') {
             series = this.graphics.series;
         }
-        svgcontainer.height(svgcontainer.width());
-        var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
+        var graphconfig = {
+            element: svgcontainer[0],
+            height: height,
+            width: width,
+            renderer: 'area',
+            stroke: true,
+            preserve: true,
+            series: series || new Rickshaw.Series.FixedDuration([{name: 'one'}], undefined, {
+                timeInterval: 1000,
+                maxDataPoints: 100,
+                timeBase: new Date().getTime() / 1000,
+                color: palette.color(2)
+            })
+        };
+        var graph = new Rickshaw.Graph(graphconfig);
+        graph.render();
         return graph;
     }
 });
