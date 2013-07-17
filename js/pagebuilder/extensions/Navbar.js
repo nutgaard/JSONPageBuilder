@@ -1,10 +1,14 @@
 PageView.extensions.navbar = Backbone.View.extend({
     render: function() {
+        this.container = this.$el;
+        this.json = this.model.attributes;
+
         var ul = this.createDivStructure(this.$el, this.model.attributes);
         this.createNavElements(ul, this.model.attributes);
+        this.registerHandlers(this.container);
     },
     createDivStructure: function(container, json) {
-        var DOMString = this.DOMTemplate({json:json});
+        var DOMString = this.DOMTemplate({json: json});
         container.append(DOMString);
         return container.find('ul.nav');
     },
@@ -12,6 +16,27 @@ PageView.extensions.navbar = Backbone.View.extend({
         var NAVString = this.NAVTemplate({elements: json.data.links});
         container.append(NAVString);
         container.find('li:first').addClass('active');
+    },
+    registerHandlers: function(container) {
+        var that = this;
+
+        container.on('click', 'li', function() {
+            var element = $(this);
+            if (!element.hasClass('active')) {
+                that.updateView(element);
+            }
+        });
+
+        container.on('navbar.change', function(event, element) {
+            var element = $(element);
+            that.updateView(element);
+        });
+    },
+    updateView: function(element) {
+        console.debug('update', element);
+        this.container.find('li.active').removeClass('active');
+        element.addClass('active');
+        this.container.trigger('navbar.updated', element);
     },
     DOMTemplate: PageView.template('\
         <div class="navbar <%= json.classes %>">\n\
