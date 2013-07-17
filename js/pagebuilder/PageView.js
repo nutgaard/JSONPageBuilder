@@ -25,6 +25,9 @@ PageView.setTagAttribute = function(node, attributeName, attributeValue) {
         node.setAttribute(attributeName, attributeValue);
     }
 };
+PageView.template = function(templatetext) {
+  return _.template(templatetext);
+};
 PageView.extensions = {};
 PageView.extensions.default = Backbone.View.extend({
     render: function() {

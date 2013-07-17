@@ -44,7 +44,7 @@ PageView.extensions.graph = Backbone.View.extend({
                 var data = [this.prev, Math.sin(this.prev / Math.PI)];
             }
             this.series[0].data.push(data);
-            if (this.series[0].data.length > 50){
+            if (this.series[0].data.length > 50) {
                 this.series[0].data.shift();
             }
             this.graphics = $.plot(this.graphics.getPlaceholder(), this.series, this.graphOptions);
@@ -63,12 +63,11 @@ PageView.extensions.graph = Backbone.View.extend({
     createDOMStructure: function(container, json) {
         if (typeof this.svgcontainer !== 'undefined') {
             return this.svgcontainer;
+        } else {
+            var DOMString = this.DOMTemplate({json:json});
+            container.append(DOMString);
+            return container.find('div:last');
         }
-        var newcontainer = document.createElement('div');
-        PageView.setTagAttribute(newcontainer, 'class', json.classes);
-        PageView.setTagAttribute(newcontainer, 'id', json.id);
-        container.append(newcontainer);
-        return $(newcontainer);
     },
     drawGraph: function(svgcontainer) {
         if (this.svgcontainer.length === 0) {
@@ -76,20 +75,19 @@ PageView.extensions.graph = Backbone.View.extend({
         }
         svgcontainer.html('');
         var height = width = svgcontainer.width();
-        
+
         this.series = [{
                 data: [],
                 label: this.json.data.graphOf[0]
-        }];
-        console.debug(this.series);
-        console.debug(this.json.data.graphOptions);
+            }];
         $.extend(this.graphOptions, this.json.data.graphOptions);
-        
+
         if (typeof this.graphics !== 'undefined') {
             series = this.graphics.series;
         }
         svgcontainer.height(svgcontainer.width());
         var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
         return graph;
-    }
+    },
+    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>')
 });
