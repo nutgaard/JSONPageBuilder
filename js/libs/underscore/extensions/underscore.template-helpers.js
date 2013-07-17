@@ -38,7 +38,9 @@
 _.addTemplateHelpers({
     iif_attr: function(attribute, value) {
         if (typeof value !== 'undefined') {
-            return attribute + '="' + value + '"';
+            if (typeof value !== 'string' || (typeof value === 'string' && value.length > 0)) {
+                return attribute + '="' + value + '"';
+            }
         }
     }
 });

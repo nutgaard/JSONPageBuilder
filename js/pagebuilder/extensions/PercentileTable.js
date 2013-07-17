@@ -3,58 +3,46 @@ PageView.extensions.percentileTable = Backbone.View.extend({
         var container = this.$el;
         var json = this.model.attributes;
         var that = this;
-        var table = document.createElement('table');
-        PageView.setTagAttribute(table, 'class', json.data.tablestyle);
+        var DOMString = this.DOMTemplate({json:json});
+        container.append(DOMString);
+//        var table = document.createElement('table');
+//        PageView.setTagAttribute(table, 'class', json.data.tablestyle);
+//
+//        //create header
+//        var thead = document.createElement('thead');
+//        PageView.setTagAttribute(thead, 'class', json.data.tableheaderstyle);
+//
+//        var tr = document.createElement('tr');
+//        PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
+//
+//        var th = document.createElement('th');
+//        th.innerHTML = 'Name/Percentiles';
+//        PageView.setTagAttribute(th, 'class', json.data.tabledatastyle);
+//
+//        tr.appendChild(th);
+//        thead.appendChild(tr);
+//        table.appendChild(thead);
 
-        //create header
-        var thead = document.createElement('thead');
-        PageView.setTagAttribute(thead, 'class', json.data.tableheaderstyle);
-
-        var tr = document.createElement('tr');
-        PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
-
-        var th = document.createElement('th');
-        th.innerHTML = 'Name/Percentiles';
-        PageView.setTagAttribute(th, 'class', json.data.tabledatastyle);
-
-        tr.appendChild(th);
-        thead.appendChild(tr);
-        table.appendChild(thead);
-
+        var thead = container.find('thead>tr');
         for (var i = 0; i < json.data.percentiles.values.length; i++) {
             var th = document.createElement('th');
             th.innerHTML = json.data.percentiles.values[i];
             PageView.setTagAttribute(th, 'class', json.data.tabledatastyle);
-
-            tr.appendChild(th);
+            thead.append(th);
         }
-        var tbody = document.createElement('tbody');
-        table.appendChild(tbody);
+//        var tbody = document.createElement('tbody');
+//        table.appendChild(tbody);
 
         //request table data
-        for (var rowId = 0; rowId < json.data.percentiles.of.length; rowId++) {
-            var rowName = json.data.percentiles.of[rowId];
-            var tr = document.createElement('tr');
-            PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
-            PageView.setTagAttribute(tr, 'data-name', rowName);
-            tbody.appendChild(tr);
-
-            var td = document.createElement('td');
-            td.innerHTML = rowName;
-            PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
-            tr.appendChild(td);
-
-            for (var i = 0; i < json.data.percentiles.values.length; i++) {
-                var td = document.createElement('td');
-                PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
-                PageView.setTagAttribute(td, 'data-percentile', json.data.percentiles.values[i]);
-                tr.appendChild(td);
-            }
+        var bodyString = this.BodyTemplate({json:json});
+        container.find('tbody').html(bodyString);
+        var that = this;
+        _.each(json.data.percentiles.of, function(procedure){
             $.get({
-                url: 'data/' + rowName,
+                url: 'data/' + procedure,
                 success: function(resp) {
                     var resp = JSON.parse(resp);
-                    var tr = $('tr[data-name=' + resp.name + ']');
+                    var tr = container.find('tr[data-name=' + resp.name + ']');
                     var ydata = that.prepareJSON(resp);
                     for (var i = 0; i < json.data.percentiles.values.length; i++) {
                         var td = tr.find('td[data-percentile="' + json.data.percentiles.values[i] + '"]');
@@ -64,8 +52,28 @@ PageView.extensions.percentileTable = Backbone.View.extend({
                     that.percentileClass(tr, json.data.percentiles.limits[resp.name]);
                 }
             });
-        }
-        container.html(table.outerHTML);
+        });
+//        for (var rowId = 0; rowId < json.data.percentiles.of.length; rowId++) {
+//            var rowName = json.data.percentiles.of[rowId];
+//            var tr = document.createElement('tr');
+//            PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
+//            PageView.setTagAttribute(tr, 'data-name', rowName);
+//            tbody.appendChild(tr);
+//
+//            var td = document.createElement('td');
+//            td.innerHTML = rowName;
+//            PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
+//            tr.appendChild(td);
+//
+//            for (var i = 0; i < json.data.percentiles.values.length; i++) {
+//                var td = document.createElement('td');
+//                PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
+//                PageView.setTagAttribute(td, 'data-percentile', json.data.percentiles.values[i]);
+//                tr.appendChild(td);
+//            }
+//            
+//        }
+//        container.html(table.outerHTML);
     },
     prepareJSON: function(d) {
         var ykey = d.ykey;
@@ -105,5 +113,25 @@ PageView.extensions.percentileTable = Backbone.View.extend({
             }
         });
         row.addClass('success');
-    }
+    },
+    DOMTemplate: PageView.template('\
+<table <%= iif_attr("class", json.data.tablestyle) %>>\n\
+    <thead <%= iif_attr("class", json.data.tableheaderstyle) %>>\n\
+        <tr <%= iif_attr("class", json.data.tablerowstyle) %>>\n\
+            <th>Name/Percentiles</th>\n\
+        </tr>\n\
+    </thead>\n\
+    <tbody></tbody>\n\
+</table>\n\
+'),
+   HeaderTemplate: PageView.template(''),
+   BodyTemplate: PageView.template('<% \n\
+    _.each(json.data.percentiles.of, function(procedure){\n\
+        %><tr<%= iif_attr("class", json.data.tablerowstyle) %> <%= iif_attr("data-name", procedure) %>>\n\
+        <td><%= procedure %></td><%\n\
+        _.each(json.data.percentiles.values, function(percentile){\n\
+            %><td<%= iif_attr("class", json.tablecellstyle) %> <%= iif_attr("data-percentile", percentile) %>></td><%\n\
+        })\n\
+        %></tr><%\n\
+    }); %>')
 });
