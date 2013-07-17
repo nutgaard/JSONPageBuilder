@@ -34,6 +34,7 @@ function Fixtures(url, type) {
                         classes: 'span4',
 //                            id: '',
                         data: {
+                            modal: true,
                             graphOf: ['ICWThingy']
                         }
                     },
@@ -42,6 +43,7 @@ function Fixtures(url, type) {
                         classes: 'span4',
 //                            id: '',
                         data: {
+                            modal: true,
                             graphOf: ['TSATCalculator']
                         }
                     },
@@ -50,6 +52,7 @@ function Fixtures(url, type) {
                         classes: 'span4',
 //                            id: '',
                         data: {
+                            modal: true,
                             graphOf: ['ICWThingy', 'TSATCalculator']
                         }
                     }
@@ -77,6 +80,19 @@ function Fixtures(url, type) {
                             tableheaderstyle: '',
                             tablerowstyle: '',
                             tablecellstyle: ''
+                        }
+                    }
+                ]
+            },{
+                type: 'div',
+                classes: 'row',
+                elements:[
+                    {
+                        type: 'graph',
+                        classes: 'span12',
+                        data:{
+                            modal: true,
+                            graphOf:['TSATCalculator']
                         }
                     }
                 ]

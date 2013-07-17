@@ -2,9 +2,6 @@ body {
     padding-top: 4em;
     padding-bottom: 3em;
 }
-div.span12>table {
-    width: 100%;
-}
 svg {
     border: #000000 solid 1px;
 }

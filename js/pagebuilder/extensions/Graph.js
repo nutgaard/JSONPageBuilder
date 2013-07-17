@@ -7,6 +7,7 @@ PageView.extensions.graph = Backbone.View.extend({
         this.type = Math.random();
         this.json = this.model.attributes;
         this.series;
+        this.isModal = false;
         this.graphOptions = {
             series: {
                 lines: {
@@ -29,6 +30,8 @@ PageView.extensions.graph = Backbone.View.extend({
             tooltip: true
         };
         this.svgcontainer = this.createDOMStructure(this.container, this.json);
+        this.createModalIfActivated(this.json);
+
         this.graphics = this.drawGraph(this.svgcontainer);
         this.startUpdate();
         this.createResizeHandler();
@@ -47,8 +50,10 @@ PageView.extensions.graph = Backbone.View.extend({
             if (this.series[0].data.length > 50) {
                 this.series[0].data.shift();
             }
-            this.graphics = $.plot(this.graphics.getPlaceholder(), this.series, this.graphOptions);
-        }.bind(this), 500);
+            this.graphics.setData([this.series[0].data]);
+            this.graphics.setupGrid();
+            this.graphics.draw();
+        }.bind(this), 50);
     },
     createResizeHandler: function() {
         var that = this;
@@ -56,30 +61,53 @@ PageView.extensions.graph = Backbone.View.extend({
             if (typeof this.svgcontainer === 'undefined') {
                 return;
             } else {
-                console.debug('updating');
-                this.svgcontainer.height(this.svgcontainer.width());
-                //this.rerender();
+                this.resize();
             }
         }.bind(this));
     },
+    resize: function() {
+        var maxheight = 600;
+        this.svgcontainer.height(this.svgcontainer.width() < maxheight ? this.svgcontainer.width() : maxheight);
+        this.graphics.resize();
+        this.graphics.setupGrid();
+        this.graphics.draw();
+    },
     createClickHandler: function() {
         var that = this;
-        this.container.on('click', '',function() {
-            
+        this.svgcontainer.on('click', 'canvas', function() {
+            $('body>.modal').bigmodal('show');
+            var placeholder = that.svgcontainer.clone(false, false);
+            $('body').off('shown').on('shown', function() {
+                $('body>.modal>.modal-header>h3').html(that.json.data.graphOf.join('/'));
+                placeholder.insertBefore(that.svgcontainer.removeClass(placeholder.attr('class')).addClass("span12"));
+                $('body>.modal>.modal-body').html(that.svgcontainer);
+                $(document).trigger('resize');
+            });
+            $('body').off('hide').on('hide', function() {
+                that.svgcontainer.removeClass("span12").addClass(placeholder.attr('class')).insertBefore(placeholder);
+                placeholder.remove();
+                $(document).trigger('resize');
+            });
         });
     },
     createDOMStructure: function(container, json) {
-        if (typeof json.data.clickformodal !== 'undefined' && json.data.clickformodal && $('.graphmodal').length === 0) {
-            var modalString = this.ModalTemplate();
-            $('body').append(modalString);
-            this.createClickHandler();
-        }
+        var out;
         if (typeof this.svgcontainer !== 'undefined') {
-            return this.svgcontainer;
+            out = this.svgcontainer;
         } else {
             var DOMString = this.DOMTemplate({json: json});
             container.append(DOMString);
-            return container.find('div:last');
+            out = container.find('div:last');
+        }
+        return out;
+    },
+    createModalIfActivated: function(json) {
+        if (typeof json.data.modal !== 'undefined' && json.data.modal) {
+            if ($('body>.modal').length === 0) {
+                //No modal handler found, ask to initialize one
+                new PageView({model: new PageComponentCollection([{type: 'modal'}]), el: 'body'});
+            }
+            this.createClickHandler();
         }
     },
     drawGraph: function(svgcontainer) {
@@ -87,31 +115,18 @@ PageView.extensions.graph = Backbone.View.extend({
             throw "No svgcontainer found";
         }
         svgcontainer.html('');
-        var height = width = svgcontainer.width();
-
         this.series = [{
                 data: [],
                 label: this.json.data.graphOf[0]
             }];
         $.extend(this.graphOptions, this.json.data.graphOptions);
-
         if (typeof this.graphics !== 'undefined') {
             series = this.graphics.series;
         }
-        svgcontainer.height(svgcontainer.width());
+        var maxheight = 600;
+        svgcontainer.height(svgcontainer.width() < maxheight ? svgcontainer.width() : maxheight);
         var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
         return graph;
     },
-    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>'),
-    ModalTemplate: PageView.template('\
-    <div class="modal hide fade graphmodal">\n\
-        <div class="modal-header">\n\
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n\
-            <h3></h3>\n\
-        </div>\n\
-        <div class="modal-body"></div>\n\
-        <div class="modal-footer">\n\
-            <a href="#" class="btn">Close</a>\n\
-        </div>\n\
-    </div>')
+    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>')
 });
