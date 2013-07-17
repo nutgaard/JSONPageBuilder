@@ -56,15 +56,28 @@ PageView.extensions.graph = Backbone.View.extend({
             if (typeof this.svgcontainer === 'undefined') {
                 return;
             } else {
-                this.rerender();
+                console.debug('updating');
+                this.svgcontainer.height(this.svgcontainer.width());
+                //this.rerender();
             }
         }.bind(this));
     },
+    createClickHandler: function() {
+        var that = this;
+        this.container.on('click', '',function() {
+            
+        });
+    },
     createDOMStructure: function(container, json) {
+        if (typeof json.data.clickformodal !== 'undefined' && json.data.clickformodal && $('.graphmodal').length === 0) {
+            var modalString = this.ModalTemplate();
+            $('body').append(modalString);
+            this.createClickHandler();
+        }
         if (typeof this.svgcontainer !== 'undefined') {
             return this.svgcontainer;
         } else {
-            var DOMString = this.DOMTemplate({json:json});
+            var DOMString = this.DOMTemplate({json: json});
             container.append(DOMString);
             return container.find('div:last');
         }
@@ -89,5 +102,16 @@ PageView.extensions.graph = Backbone.View.extend({
         var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
         return graph;
     },
-    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>')
+    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>'),
+    ModalTemplate: PageView.template('\
+    <div class="modal hide fade graphmodal">\n\
+        <div class="modal-header">\n\
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n\
+            <h3></h3>\n\
+        </div>\n\
+        <div class="modal-body"></div>\n\
+        <div class="modal-footer">\n\
+            <a href="#" class="btn">Close</a>\n\
+        </div>\n\
+    </div>')
 });
