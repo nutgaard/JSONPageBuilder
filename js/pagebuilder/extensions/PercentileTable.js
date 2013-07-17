@@ -5,23 +5,6 @@ PageView.extensions.percentileTable = Backbone.View.extend({
         var that = this;
         var DOMString = this.DOMTemplate({json:json});
         container.append(DOMString);
-//        var table = document.createElement('table');
-//        PageView.setTagAttribute(table, 'class', json.data.tablestyle);
-//
-//        //create header
-//        var thead = document.createElement('thead');
-//        PageView.setTagAttribute(thead, 'class', json.data.tableheaderstyle);
-//
-//        var tr = document.createElement('tr');
-//        PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
-//
-//        var th = document.createElement('th');
-//        th.innerHTML = 'Name/Percentiles';
-//        PageView.setTagAttribute(th, 'class', json.data.tabledatastyle);
-//
-//        tr.appendChild(th);
-//        thead.appendChild(tr);
-//        table.appendChild(thead);
 
         var thead = container.find('thead>tr');
         for (var i = 0; i < json.data.percentiles.values.length; i++) {
@@ -30,8 +13,6 @@ PageView.extensions.percentileTable = Backbone.View.extend({
             PageView.setTagAttribute(th, 'class', json.data.tabledatastyle);
             thead.append(th);
         }
-//        var tbody = document.createElement('tbody');
-//        table.appendChild(tbody);
 
         //request table data
         var bodyString = this.BodyTemplate({json:json});
@@ -53,27 +34,6 @@ PageView.extensions.percentileTable = Backbone.View.extend({
                 }
             });
         });
-//        for (var rowId = 0; rowId < json.data.percentiles.of.length; rowId++) {
-//            var rowName = json.data.percentiles.of[rowId];
-//            var tr = document.createElement('tr');
-//            PageView.setTagAttribute(tr, 'class', json.data.tablerowstyle);
-//            PageView.setTagAttribute(tr, 'data-name', rowName);
-//            tbody.appendChild(tr);
-//
-//            var td = document.createElement('td');
-//            td.innerHTML = rowName;
-//            PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
-//            tr.appendChild(td);
-//
-//            for (var i = 0; i < json.data.percentiles.values.length; i++) {
-//                var td = document.createElement('td');
-//                PageView.setTagAttribute(td, 'class', json.data.tablecellstyle);
-//                PageView.setTagAttribute(td, 'data-percentile', json.data.percentiles.values[i]);
-//                tr.appendChild(td);
-//            }
-//            
-//        }
-//        container.html(table.outerHTML);
     },
     prepareJSON: function(d) {
         var ykey = d.ykey;
