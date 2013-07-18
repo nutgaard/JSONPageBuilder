@@ -35,18 +35,11 @@ function Fixtures(url, type) {
 //                            id: '',
                         data: {
                             modal: true,
-                            graphOf: ['ICWThingy']
-                        }
-
-                        
-                    },
-                    {
-                        type: 'graph',
-                        classes: 'span4',
-//                            id: '',
-                        data: {
-                            modal: true,
-                            graphOf: ['TSATCalculator']
+                            graphOf: ['ICWThingy'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT24h"]
+							}
                         }
                     },
                     {
@@ -55,7 +48,24 @@ function Fixtures(url, type) {
 //                            id: '',
                         data: {
                             modal: true,
-                            graphOf: ['ICWThingy', 'TSATCalculator']
+                            graphOf: ['TSATCalculator'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT24h"]
+							}
+                        }
+                    },
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            modal: true,
+                            graphOf: ['ICWThingy', 'TSATCalculator'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT24h"]
+							}
                         }
                     }
                 ]
@@ -76,7 +86,91 @@ function Fixtures(url, type) {
                                 limits: {
                                     'ICWThingy': [11, 10, 10, 10],
                                     'TSATCalculator': [10, 10, 10, 10]
-                                }
+                                },
+								timeConfig: {
+									realtime: false,
+									pt: ["PT24h"]
+								}
+                            },
+                            tablestyle: 'table table-striped',
+                            tableheaderstyle: '',
+                            tablerowstyle: '',
+                            tablecellstyle: ''
+                        }
+                    }
+                ]
+            }
+        ];
+    };
+    this.getLast72hJSON = function() {
+        return [
+            {
+                type: 'div',
+                classes: 'row',
+//                    id: '',
+                elements: [
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            modal: true,
+                            graphOf: ['ICWThingy'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT72h"]
+							}
+                        }
+                    },
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            modal: true,
+                            graphOf: ['TSATCalculator'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT72h"]
+							}
+                        }
+                    },
+                    {
+                        type: 'graph',
+                        classes: 'span4',
+//                            id: '',
+                        data: {
+                            modal: true,
+                            graphOf: ['ICWThingy', 'TSATCalculator'],
+							timeConfig: {
+								realtime: false,
+								pt: ["PT72h"]
+							}
+                        }
+                    }
+                ]
+            },
+            {
+                type: 'div',
+                classes: 'row',
+//                    id: '',
+                elements: [
+                    {
+                        type: 'percentileTable',
+                        classes: '',
+//                            id: '',
+                        data: {
+                            percentiles: {
+                                of: ['ICWThingy', 'TSATCalculator'],
+                                values: [100, 90, 80, 0],
+                                limits: {
+                                    'ICWThingy': [11, 10, 10, 10],
+                                    'TSATCalculator': [10, 10, 10, 10]
+                                },
+								timeConfig: {
+									realtime: false,
+									pt: ["PT72h"]
+								}
                             },
                             tablestyle: 'table table-striped',
                             tableheaderstyle: '',
@@ -208,6 +302,9 @@ Fixtures.prototype.getResponse = function(settings) {
             break;
         case 'page/last24h':
             json = this.getLast24hJSON();
+            break;
+        case 'page/last72h':
+            json = this.getLast72hJSON();
             break;
         case 'page/lastweek':
             json = this.getLastWeekJSON();
