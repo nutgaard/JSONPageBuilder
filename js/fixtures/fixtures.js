@@ -37,6 +37,8 @@ function Fixtures(url, type) {
                             modal: true,
                             graphOf: ['ICWThingy']
                         }
+
+                        
                     },
                     {
                         type: 'graph',
