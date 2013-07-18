@@ -20,11 +20,12 @@ PageView.extensions.navbar = Backbone.View.extend({
     registerHandlers: function(container) {
         var that = this;
 
-        container.on('click', 'li', function() {
+        container.on('click', 'li', function(e) {
             var element = $(this);
             if (!element.hasClass('active')) {
                 that.updateView(element);
             }
+            e.preventDefault();
         });
 
         container.on('navbar.change', function(event, element) {
