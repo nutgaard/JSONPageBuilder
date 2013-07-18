@@ -8,7 +8,6 @@ PageView.extensions.modal = Backbone.View.extend({
         this.json = this.model.attributes;
 
         this.modal = this.createStructure(this.container, this.json);
-//        console.debug('modal', this.modal);
         this.head = this.modal.find('.modal-header>h3');
         this.body = this.modal.find('.modal-body');
         this.injectJSON = undefined;

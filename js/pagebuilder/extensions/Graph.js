@@ -25,7 +25,7 @@ PageView.extensions.graph = Backbone.View.extend({
         if (timeconfig.realtime) {
             setInterval(function() {
                 this.updateGraph();
-            }.bind(this), timeconfig.pollInterval);
+            }.bind(this), 100);
         } else {
             this.updateGraph();
         }
@@ -39,7 +39,7 @@ PageView.extensions.graph = Backbone.View.extend({
         }
         var data = [x, Math.random()];
         this.series[0].data.push(data);
-        if (this.series[0].data.length > 50) {
+        if (this.series[0].data.length > 200) {
             this.series[0].data.shift();
         }
         this.graphics.setData([this.series[0].data]);
