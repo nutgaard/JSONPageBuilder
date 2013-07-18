@@ -30,6 +30,7 @@ $(document).ready(function() {
         $.get({
             url: 'page/' + page,
             success: function(r) {
+                $('body').trigger('destroy_view');
                 new PageView({model: new PageComponentCollection(JSON.parse(r)), el: elementSelector});
             }
         });
