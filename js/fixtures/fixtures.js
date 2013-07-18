@@ -117,7 +117,7 @@ function Fixtures(url, type) {
                             modal: true,
                             graphOf: ['ICWThingy'],
                             timeConfig: {
-                                realtime: false,
+                                realtime: true,
                                 pt: ["PT72h"]
                             }
                         }
@@ -130,7 +130,7 @@ function Fixtures(url, type) {
                             modal: true,
                             graphOf: ['TSATCalculator'],
                             timeConfig: {
-                                realtime: false,
+                                realtime: true,
                                 pt: ["PT72h"]
                             }
                         }
@@ -143,7 +143,7 @@ function Fixtures(url, type) {
                             modal: true,
                             graphOf: ['ICWThingy', 'TSATCalculator'],
                             timeConfig: {
-                                realtime: false,
+                                realtime: true,
                                 pt: ["PT72h"]
                             }
                         }
@@ -194,7 +194,7 @@ function Fixtures(url, type) {
                         type: 'package',
                         data: {
                             createcontainer: true,
-                            url: 'last2weeks'
+                            url: 'page/last2w'
                         }
                     }
                 ]
@@ -211,6 +211,11 @@ function Fixtures(url, type) {
             }
         ];
     }
+
+    this.getRealtimeJSON = function () {
+    	return []
+    }
+
     this.getICWThingyData = function() {
         return {
             name: 'ICWThingy',
@@ -306,12 +311,15 @@ Fixtures.prototype.getResponse = function(settings) {
         case 'page/last72h':
             json = this.getLast72hJSON();
             break;
-        case 'page/lastweek':
+        case 'page/last1w':
             json = this.getLastWeekJSON();
             break;
-        case 'last2weeks':
+        case 'page/last2w':
             json = this.getLast2WeeksJSON();
             break;
+        case 'page/realtime':
+        	json = this.getRealtimeJSON();
+        	break;
         case 'data/ICWThingy':
             json = this.getICWThingyData();
             break;
