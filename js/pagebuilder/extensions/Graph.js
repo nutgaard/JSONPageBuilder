@@ -5,7 +5,7 @@ PageView.extensions.graph = Backbone.View.extend({
         this.graphics = undefined;
         this.prev = 0;
         this.type = Math.random();
-        this.json = this.model.attributes;
+        this.json = $.extend(true, {}, this.jsonDefaults, this.model.attributes);
         this.series;
         this.isModal = false;
         this.isShown = false;
@@ -38,6 +38,7 @@ PageView.extensions.graph = Backbone.View.extend({
         this.createResizeHandler();
     },
     startUpdate: function() {
+        var timeconfig = this.json.data.timeconfig;
         setInterval(function() {
             this.prev += 50;
             if (this.type < 0.33) {
@@ -76,7 +77,7 @@ PageView.extensions.graph = Backbone.View.extend({
     createClickHandler: function() {
         var that = this;
         this.svgcontainer.on('click', 'canvas', function(event) {
-            if (that.isModal){
+            if (that.isModal) {
                 event.preventDefault();
                 return false;
             }
@@ -91,7 +92,7 @@ PageView.extensions.graph = Backbone.View.extend({
                 $(document).trigger('resize');
             });
             $('body').off('hide').on('hide', function(event) {
-                if (!that.isShown){
+                if (!that.isShown) {
                     event.preventDefault();
                     return;
                 }
@@ -141,5 +142,18 @@ PageView.extensions.graph = Backbone.View.extend({
         var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
         return graph;
     },
-    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>><h5 class="muted text-center"><%= json.data.graphOf.join("/") %></h5><div class="svgcontainer"></div></div>')
+    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>><h5 class="muted text-center"><%= json.data.graphOf.join("/") %></h5><div class="svgcontainer"></div></div>'),
+    jsonDefaults: {
+        type: 'graph',
+        classes: '',
+        id: '',
+        data: {
+            modal: false,
+            graphOf: [],
+            timeConfig: {
+                realtime: false,
+                pt: ['PT1d']
+            }
+        }
+    }
 });
