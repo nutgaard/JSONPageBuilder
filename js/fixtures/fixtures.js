@@ -36,10 +36,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['ICWThingy'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT24h"]
-							}
+                            timeConfig: {
+                                realtime: true,
+                                pt: ["PT24h"]
+                            }
                         }
                     },
                     {
@@ -49,10 +49,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['TSATCalculator'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT24h"]
-							}
+                            timeConfig: {
+                                realtime: true,
+                                pt: ["PT24h"]
+                            }
                         }
                     },
                     {
@@ -62,10 +62,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['ICWThingy', 'TSATCalculator'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT24h"]
-							}
+                            timeConfig: {
+                                realtime: true,
+                                pt: ["PT24h"]
+                            }
                         }
                     }
                 ]
@@ -87,10 +87,10 @@ function Fixtures(url, type) {
                                     'ICWThingy': [11, 10, 10, 10],
                                     'TSATCalculator': [10, 10, 10, 10]
                                 },
-								timeConfig: {
-									realtime: false,
-									pt: ["PT24h"]
-								}
+                                timeConfig: {
+                                    realtime: false,
+                                    pt: ["PT24h"]
+                                }
                             },
                             tablestyle: 'table table-striped',
                             tableheaderstyle: '',
@@ -116,10 +116,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['ICWThingy'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT72h"]
-							}
+                            timeConfig: {
+                                realtime: false,
+                                pt: ["PT72h"]
+                            }
                         }
                     },
                     {
@@ -129,10 +129,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['TSATCalculator'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT72h"]
-							}
+                            timeConfig: {
+                                realtime: false,
+                                pt: ["PT72h"]
+                            }
                         }
                     },
                     {
@@ -142,10 +142,10 @@ function Fixtures(url, type) {
                         data: {
                             modal: true,
                             graphOf: ['ICWThingy', 'TSATCalculator'],
-							timeConfig: {
-								realtime: false,
-								pt: ["PT72h"]
-							}
+                            timeConfig: {
+                                realtime: false,
+                                pt: ["PT72h"]
+                            }
                         }
                     }
                 ]
@@ -167,10 +167,10 @@ function Fixtures(url, type) {
                                     'ICWThingy': [11, 10, 10, 10],
                                     'TSATCalculator': [10, 10, 10, 10]
                                 },
-								timeConfig: {
-									realtime: false,
-									pt: ["PT72h"]
-								}
+                                timeConfig: {
+                                    realtime: false,
+                                    pt: ["PT72h"]
+                                }
                             },
                             tablestyle: 'table table-striped',
                             tableheaderstyle: '',
