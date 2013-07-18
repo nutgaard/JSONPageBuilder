@@ -83,19 +83,6 @@ function Fixtures(url, type) {
                         }
                     }
                 ]
-            },{
-                type: 'div',
-                classes: 'row',
-                elements:[
-                    {
-                        type: 'graph',
-                        classes: 'span12',
-                        data:{
-                            modal: true,
-                            graphOf:['TSATCalculator']
-                        }
-                    }
-                ]
             }
         ];
     };

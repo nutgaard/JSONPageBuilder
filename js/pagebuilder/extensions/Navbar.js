@@ -33,7 +33,6 @@ PageView.extensions.navbar = Backbone.View.extend({
         });
     },
     updateView: function(element) {
-        console.debug('update', element);
         this.container.find('li.active').removeClass('active');
         element.addClass('active');
         this.container.trigger('navbar.updated', element);

@@ -38,7 +38,7 @@ PageView.extensions.graph = Backbone.View.extend({
     },
     startUpdate: function() {
         setInterval(function() {
-            this.prev += 1;
+            this.prev += 50;
             if (this.type < 0.33) {
                 var data = [this.prev, Math.floor(Math.random() * 40) + 120];
             } else if (this.type < 0.66) {
