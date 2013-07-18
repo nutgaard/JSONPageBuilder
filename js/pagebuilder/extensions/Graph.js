@@ -128,5 +128,5 @@ PageView.extensions.graph = Backbone.View.extend({
         var graph = $.plot(svgcontainer[0], this.series, this.graphOptions);
         return graph;
     },
-    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>></div>')
+    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>><h5 class="muted text-center"><%= json.data.graphOf.join("/") %></h5><div class="svgcontainer"></div></div>')
 });
