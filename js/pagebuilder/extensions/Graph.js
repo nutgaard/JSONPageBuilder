@@ -76,17 +76,14 @@ PageView.extensions.graph = Backbone.View.extend({
     createClickHandler: function() {
         var that = this;
         this.svgcontainer.on('click', 'canvas', function(event) {
-            console.debug('click request', arguments);
             if (that.isModal){
                 event.preventDefault();
                 return false;
             }
-            console.debug('accepted click');
             that.isModal = true;
             $('body>.modal').bigmodal('show');
             var placeholder = that.svgcontainer.clone(false, false);
             $('body').off('shown').on('shown', function() {
-                console.debug('shown');
                 $('body>.modal>.modal-header>h3').html(that.json.data.graphOf.join('/'));
                 placeholder.insertBefore(that.svgcontainer.removeClass(placeholder.attr('class')).addClass("span12"));
                 $('body>.modal>.modal-body').html(that.svgcontainer);
@@ -98,7 +95,6 @@ PageView.extensions.graph = Backbone.View.extend({
                     event.preventDefault();
                     return;
                 }
-                console.debug('hide')
                 that.svgcontainer.removeClass("span12").addClass(placeholder.attr('class')).insertBefore(placeholder);
                 placeholder.remove();
                 $(document).trigger('resize');
