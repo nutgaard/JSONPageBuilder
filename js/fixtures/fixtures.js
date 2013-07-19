@@ -104,12 +104,6 @@ function Fixtures(url, type) {
     };
     this.getLast72hJSON = function() {
         return [
-        	{
-        		type: 'h1',
-        		data: {
-        			innerHTML: '72h'
-        		}
-        	},
             {
                 type: 'div',
                 classes: 'row',
