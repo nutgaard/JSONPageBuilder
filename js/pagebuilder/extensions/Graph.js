@@ -89,13 +89,11 @@ PageView.extensions.graph = Backbone.View.extend({
         var that = this;
         var modal = $('body>.modal');
         this.placeholder = that.svgcontainer.clone(false, false);
-        console.debug('placeholder', this.placeholder);
         this.svgcontainer.on('click', 'canvas', function(event) {
             if (that.isModal) {
                 event.preventDefault();
                 return false;
             }
-            console.debug('modal_click');
             that.isModal = true;
             that.placeholder.removeClass().addClass('span12');
             that.placeholder.append(that.svgcontainer.children());
@@ -113,12 +111,10 @@ PageView.extensions.graph = Backbone.View.extend({
                 that.isShown = true;
             });
             modal.on('hide', function(e) {
-                console.debug('hide', that.isShown, that.isModal);
                 if (!that.isShown) {
                     e.preventDefault();
                     return false;
                 }
-                console.debug('appending to', that.svgcontainer);
                 that.svgcontainer.append(that.placeholder.children());
                 that.placeholder.remove();
                 that.isModal = false;
@@ -126,41 +122,9 @@ PageView.extensions.graph = Backbone.View.extend({
                 $(document).trigger('resize');
             });
             modal.on('hidden', function() {
-                console.debug('undelegating modal events');
                 modal.off();
             });
         });
-
-//        this.svgcontainer.on('click', 'canvas', function(event) {
-//            if (that.isModal) {
-//                event.preventDthat.svgcontainer.heigth()efault();
-//                return false;
-//            }
-//            that.isModal = true;
-//            $('body>.modal').bigmodal('show');
-//            var placeholder = that.svgcontainer.clone(false, false);
-//            console.debug('modal');
-//            modal.off('show').on('show', function() {
-//                console.debug('show');
-//                $('body>.modal>.modal-header>h3').html(that.json.data.graphOf.join('/'));
-//                placeholder.insertBefore(that.svgcontainer.removeClass(placeholder.attr('class')).addClass("span12"));
-//                $('body>.modal>.modal-body').html(that.svgcontainer);
-//                that.isShown = true;
-//                $(document).trigger('resize');
-//            });
-//            modal.off('hide').on('hide', function(event) {
-//                console.debug('hide');
-//                if (!that.isShown) {
-//                    event.preventDefault();
-//                    return;
-//                }
-//                that.svgcontainer.removeClass("span12").addClass(placeholder.attr('class')).insertBefore(placeholder);
-//                placeholder.remove();
-//                $(document).trigger('resize');
-//                that.isModal = false;
-//                that.isShown = false;
-//            });
-//        });
     },
     createDOMStructure: function(container, json) {
         var out;
