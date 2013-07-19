@@ -38,7 +38,7 @@ function Fixtures(url, type) {
                             graphOf: ['ICWThingy'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT24h"]
+                                pt: ["PT24H"]
                             }
                         }
                     },
@@ -51,7 +51,7 @@ function Fixtures(url, type) {
                             graphOf: ['TSATCalculator'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT24h"]
+                                pt: ["PT24H"]
                             }
                         }
                     },
@@ -64,7 +64,7 @@ function Fixtures(url, type) {
                             graphOf: ['ICWThingy', 'TSATCalculator'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT24h"]
+                                pt: ["PT24H"]
                             }
                         }
                     }
@@ -89,7 +89,7 @@ function Fixtures(url, type) {
                                 },
                                 timeConfig: {
                                     realtime: false,
-                                    pt: ["PT24h"]
+                                    pt: ["PT24H"]
                                 }
                             },
                             tablestyle: 'table table-striped',
@@ -118,7 +118,7 @@ function Fixtures(url, type) {
                             graphOf: ['ICWThingy'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT72h"]
+                                pt: ["PT72H"]
                             }
                         }
                     },
@@ -131,7 +131,7 @@ function Fixtures(url, type) {
                             graphOf: ['TSATCalculator'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT72h"]
+                                pt: ["PT72H"]
                             }
                         }
                     },
@@ -144,7 +144,7 @@ function Fixtures(url, type) {
                             graphOf: ['ICWThingy', 'TSATCalculator'],
                             timeConfig: {
                                 realtime: true,
-                                pt: ["PT72h"]
+                                pt: ["PT72H"]
                             }
                         }
                     }
@@ -169,7 +169,7 @@ function Fixtures(url, type) {
                                 },
                                 timeConfig: {
                                     realtime: false,
-                                    pt: ["PT72h"]
+                                    pt: ["PT72H"]
                                 }
                             },
                             tablestyle: 'table table-striped',
@@ -183,45 +183,164 @@ function Fixtures(url, type) {
         ];
     };
     this.getLastWeekJSON = function() {
-        return [
-            {
-                type: 'h1',
-                data: {
-                    innerHTML: 'Loaded after everything else'
-                },
-                elements: [
-                    {
-                        type: 'package',
-                        data: {
-                            createcontainer: true,
-                            url: 'page/last2w'
-                        }
-                    }
-                ]
-            }
-        ];
-    }
+		return [
+			{
+				type: 'div',
+				classes: 'row',
+				elements: [
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['ICWThingy'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT1W"]
+							}
+						}
+					},
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['TSATCalculator'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT1W"]
+							}
+						}
+					},
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['ICWThingy', 'TSATCalculator'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT1W"]
+							}
+						}
+					}
+				]
+			},
+			{
+				type: 'div',
+				classes: 'row',
+				elements: [
+					{
+						type: 'percentileTable',
+						classes: '',
+						data: {
+							percentiles: {
+								of: ['ICWThingy', 'TSATCalculator'],
+								values: [100, 90, 80, 0],
+								limits: {
+									'ICWThingy': [11, 10, 10, 10],
+									'TSATCalculator': [10, 10, 10, 10]
+								},
+								timeConfig: {
+									realtime: false,
+									pt: ["PT1W"]
+								}
+							},
+							tablestyle: 'table table-striped',
+							tableheaderstyle: '',
+							tablerowstyle: '',
+							tablecellstyle: ''
+						}
+					}
+				]
+			}
+		];
+	}
     this.getLast2WeeksJSON = function() {
-        return [
-            {
-                type: 'h2',
-                data: {
-                    innerHTML: 'SubSub'
-                }
-            }
-        ];
-    }
-
+		return [
+			{
+				type: 'div',
+				classes: 'row',
+				elements: [
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['ICWThingy'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT2W"]
+							}
+						}
+					},
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['TSATCalculator'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT2W"]
+							}
+						}
+					},
+					{
+						type: 'graph',
+						classes: 'span4',
+						data: {
+							modal: true,
+							graphOf: ['ICWThingy', 'TSATCalculator'],
+							timeConfig: {
+								realtime: true,
+								pt: ["PT2W"]
+							}
+						}
+					}
+				]
+			},
+			{
+				type: 'div',
+				classes: 'row',
+				elements: [
+					{
+						type: 'percentileTable',
+						classes: '',
+						data: {
+							percentiles: {
+								of: ['ICWThingy', 'TSATCalculator'],
+								values: [100, 90, 80, 0],
+								limits: {
+									'ICWThingy': [11, 10, 10, 10],
+									'TSATCalculator': [10, 10, 10, 10]
+								},
+								timeConfig: {
+									realtime: false,
+									pt: ["PT2W"]
+								}
+							},
+							tablestyle: 'table table-striped',
+							tableheaderstyle: '',
+							tablerowstyle: '',
+							tablecellstyle: ''
+						}
+					}
+				]
+			}
+		];
+	}
     this.getRealtimeJSON = function () {
     	return [
     		{
     			type: 'grapharray',
     			data: {
     				graphOf: ['all'],
-    				span: 3,
+    				span: 4,
     				timeConfig: {
     					realtime: true,
-    					pt : ['PT1h']
+
+    					pt : ['PT1H']
     				}
     			}
     		}
@@ -310,6 +429,16 @@ function Fixtures(url, type) {
             ]
         }
     }
+    this.getAllProcedures = function()
+    {
+    	return ['ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		 'ICWThingy', 'TSATCalculator'];
+    }
 }
 Fixtures.prototype.getResponse = function(settings) {
     var json = {};
@@ -338,6 +467,10 @@ Fixtures.prototype.getResponse = function(settings) {
         case 'data/TSATCalculator':
             json = this.getTSATCalculatorData();
             break;
+        case 'procedure/all':
+        	json = this.getAllProcedures();
+        	console.log('procedure/all');
+        	break;
         default:
             delete settings.fixture;
             json = $.ajax(settings);
