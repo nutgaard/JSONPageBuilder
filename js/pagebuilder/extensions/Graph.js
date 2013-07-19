@@ -187,9 +187,6 @@ PageView.extensions.graph = Backbone.View.extend({
                         show: true
                     }
                 },
-                legend: {
-                    show: true
-                },
                 grid: {
                     hoverable: true
                 },
