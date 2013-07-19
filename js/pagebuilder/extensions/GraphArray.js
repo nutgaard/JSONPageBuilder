@@ -23,27 +23,27 @@ PageView.extensions.grapharray = Backbone.View.extend({
 
 	createGraphs: function(graphs){
 		var r = []
-
-		for (var i=0; i< graphs.length/(12/this.json.data.span); i++){
-			r.push({
-            	type: 'div',
-                classes: 'row-fluid',
-                elements: [
-                ]
-            });
-
-			for(var j=0; j < (12/this.json.data.span); j++)
-			{
-				r[r.length-1].elements.push({
-					type: 'graph',
-					classes: 'span'+this.json.data.span,
-					data: {
-						modal: true,
-						graphOf: [graphs[i]],
-						timeConfig: this.json.data.timeConfig
-					}
-				})
+		var offset = Math.floor(12/this.json.data.span);
+		var newRowAt = 0;
+		for (var i=0; i < graphs.length; i++){
+			if(i === newRowAt){
+				r.push({
+					type: 'div',
+					classes: 'row-fluid',
+					elements: [
+					]
+				});
+				newRowAt += offset;
 			}
+			r[r.length-1].elements.push({
+				type: 'graph',
+				classes: 'span'+this.json.data.span,
+				data: {
+					modal: true,
+					graphOf: [graphs[i]],
+					timeConfig: this.json.data.timeConfig
+				}
+			})
 		}
 		r = JSON.stringify(r);
 		new PageView({model: new PageComponentCollection(JSON.parse(r)), el:$('.applicationcontainer')})
@@ -52,7 +52,7 @@ PageView.extensions.grapharray = Backbone.View.extend({
 		type: 'grapharray',
 		data:{
 			graphOf: ['all'],
-			span: 3, //Sets the size of each graph and how many graphs there is in each row. e.g: span: 3 = 12/3= 4 graphs in each row.
+			span: 4, //Sets the size of each graph and how many graphs there is in each row. e.g: span: 4 = 12/4= 3 graphs in each row.
 			timeConfig:{
 				realtime: true,
 				pollInterval: 1000,

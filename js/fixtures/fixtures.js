@@ -431,13 +431,17 @@ function Fixtures(url, type) {
     }
     this.getAllProcedures = function()
     {
-    	return ['ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
-    	 		'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
-    	 		'ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
-    	 		'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
-    	 		'ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy',
-    	 		 'TSATCalculator','ICWThingy', 'TSATCalculator','ICWThingy', 'TSATCalculator',
-    	 		 'ICWThingy', 'TSATCalculator'];
+    	return ['ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy','TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy','TSATCalculator','ICWThingy',
+    	 		'TSATCalculator','ICWThingy', 'TSATCalculator',
+    	 		'ICWThingy', 'TSATCalculator'];
     }
 }
 Fixtures.prototype.getResponse = function(settings) {
