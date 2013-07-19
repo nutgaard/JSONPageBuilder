@@ -215,7 +215,15 @@ function Fixtures(url, type) {
     this.getRealtimeJSON = function () {
     	return [
     		{
-    			type: 'realtime'
+    			type: 'grapharray',
+    			data: {
+    				graphOf: ['all'],
+    				span: 3,
+    				timeConfig: {
+    					realtime: true,
+    					pt : ['PT1h']
+    				}
+    			}
     		}
     	]
     }
