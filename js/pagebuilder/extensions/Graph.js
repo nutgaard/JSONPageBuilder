@@ -2,11 +2,14 @@ PageView.extensions.graph = Backbone.View.extend({
     render: function() {
         this.container = this.$el;
         this.json = $.extend(true, {}, this.jsonDefaults, this.model.attributes);
+        
         this.svgcontainer = undefined;
         this.graphics = undefined;
         this.series;
+        this.intervalUpdater;
         this.isModal = false;
         this.isShown = false;
+        
         this.svgcontainer = this.createDOMStructure(this.container, this.json);
         this.createModalIfActivated(this.json);
         this.graphics = this.drawGraph(this.svgcontainer);
@@ -19,11 +22,14 @@ PageView.extensions.graph = Backbone.View.extend({
         this.$el.removeData().unbind();
         this.remove();
         Backbone.View.prototype.remove.call(this);
+        if (typeof this.intervalUpdater !== 'undefined'){
+            clearInterval(this.intervalUpdater);
+        }
     },
     startUpdate: function() {
         var timeconfig = this.json.data.timeConfig;
         if (timeconfig.realtime) {
-            setInterval(function() {
+            this.intervalUpdater = setInterval(function() {
                 this.updateGraph();
             }.bind(this), 100);
         } else {
@@ -47,8 +53,7 @@ PageView.extensions.graph = Backbone.View.extend({
         this.graphics.draw();
     },
     createDestroyHandler: function() {
-        this.container.on('destroy_view', function() {
-            console.debug('destroy');
+        $('body').on('destroy_view', function() {
             this.destroy_view();
         }.bind(this));
     },
