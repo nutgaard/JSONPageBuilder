@@ -1,14 +1,11 @@
 PageView.extensions.grapharray = Backbone.View.extend({
 
 	render: function(){
-		// Get Procedures
-		// Create a Graph for every procedure.
 		this.container = this.$el;
         this.json = $.extend(true, {}, this.jsonDefaults, this.model.attributes);
 
 		if(this.json.data.graphOf.length === 1 && this.json.data.graphOf[0] === 'all')
 		{
-			// get Procedures
 			var that = this;
 			$.get({
 				url: 'procedure/all',
@@ -26,14 +23,14 @@ PageView.extensions.grapharray = Backbone.View.extend({
 
 	createGraphs: function(graphs){
 		var r = []
-		console.log(graphs.length)
+
 		for (var i=0; i< graphs.length/(12/this.json.data.span); i++){
 			r.push({
-                   			type: 'div',
-                   			classes: 'row-fluid',
-                   			elements: [
-                   			]
-                   		})
+            	type: 'div',
+                classes: 'row-fluid',
+                elements: [
+                ]
+            });
 
 			for(var j=0; j < (12/this.json.data.span); j++)
 			{
@@ -48,11 +45,8 @@ PageView.extensions.grapharray = Backbone.View.extend({
 				})
 			}
 		}
-		console.log("after for")
 		r = JSON.stringify(r);
-		console.log(JSON.parse(r).length);
 		new PageView({model: new PageComponentCollection(JSON.parse(r)), el:$('.applicationcontainer')})
-		console.log('after pageview');
 	},
 	jsonDefaults:{
 		type: 'grapharray',

@@ -469,7 +469,6 @@ Fixtures.prototype.getResponse = function(settings) {
             break;
         case 'procedure/all':
         	json = this.getAllProcedures();
-        	console.log('procedure/all');
         	break;
         default:
             delete settings.fixture;
