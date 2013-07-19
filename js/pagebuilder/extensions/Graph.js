@@ -75,7 +75,8 @@ PageView.extensions.graph = Backbone.View.extend({
             var c = this.placeholder;
             var nw = c.width();
         } else {
-			var nw = this.svgcontainer.parent().width();
+            var c = this.svgcontainer;
+			var nw = this.svgcontainer.parent().width() ? this.svgcontainer.parent().width() : this.containerwidth;
         }
         var maxheight = 600;
         this.svgcontainer.height(nw < maxheight ? nw : maxheight);
