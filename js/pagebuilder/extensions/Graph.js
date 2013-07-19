@@ -75,8 +75,7 @@ PageView.extensions.graph = Backbone.View.extend({
             var c = this.placeholder;
             var nw = c.width();
         } else {
-            var c = this.svgcontainer;
-            var nw = this.containerwidth;
+			var nw = this.svgcontainer.parent().width();
         }
         var maxheight = 600;
         this.svgcontainer.height(nw < maxheight ? nw : maxheight);
@@ -175,7 +174,7 @@ PageView.extensions.graph = Backbone.View.extend({
             timeConfig: {
                 realtime: true,
                 pollInterval: 1000,
-                pt: ['PT1d']
+                pt: ['PT1D']
             },
             graphOptions: {
                 series: {
