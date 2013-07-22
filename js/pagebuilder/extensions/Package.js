@@ -10,11 +10,8 @@ PageView.extensions.package = Backbone.View.extend({
             container = newcontainer;
         }
         var that = this;
-        $.get({
-            url: json.data.url,
-            success: function(resp) {
-                new PageView({el: container, model: new PageComponentCollection(JSON.parse(resp))});
-            }
+        $.get(json.data.url, function(resp){
+            new PageView({el: container, model: new PageComponentCollection(resp)});
         });
     }
 });

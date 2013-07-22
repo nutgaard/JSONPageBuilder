@@ -7,13 +7,10 @@ PageView.extensions.grapharray = Backbone.View.extend({
 		if(this.json.data.graphOf.length === 1 && this.json.data.graphOf[0] === 'all')
 		{
 			var that = this;
-			$.get({
-				url: 'procedure/all',
-				success: function(r){
-					that.graphs = JSON.parse(r);
+                        $.get('procedure/', function(r){
+                            		that.graphs = r;
 					that.createGraphs(that.graphs);
-				}
-			});
+                        });
 		}
 		else{
 			this.graphs = this.json.data.graphOf;
@@ -45,8 +42,8 @@ PageView.extensions.grapharray = Backbone.View.extend({
 				}
 			})
 		}
-		r = JSON.stringify(r);
-		new PageView({model: new PageComponentCollection(JSON.parse(r)), el:$('.applicationcontainer')})
+		r = JSON.stringify(r);JSON.parse
+		new PageView({model: new PageComponentCollection(r), el:$('.applicationcontainer')})
 	},
 	jsonDefaults:{
 		type: 'grapharray',

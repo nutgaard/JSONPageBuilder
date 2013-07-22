@@ -23,12 +23,9 @@ PageView.extensions.graph = Backbone.View.extend({
     },
     getProcedureMapping: function(callback) {
         var that = this;
-        $.get({
-            url: 'procedure/',
-            success: function(resp) {
-                that.procedureMapping = JSON.parse(resp);
-                callback();
-            }
+        $.get('rest/procedure', function(resp) {
+            that.procedureMapping = resp;
+            callback();
         });
     },
     destroy_view: function() {
@@ -52,6 +49,7 @@ PageView.extensions.graph = Backbone.View.extend({
         }
     },
     updateGraph: function() {
+        var that = this;
         var name = this.json.data.graphOf;
         var conf = this.json.data;
         var intervalConf = conf.timeConfig.pt.join('/');
@@ -61,18 +59,16 @@ PageView.extensions.graph = Backbone.View.extend({
         var suffix = '?from=' + from + '&to=' + to + '&buckets=' + conf.datapoints;
         for (var i = 0; i < name.length; i++) {
             var url = 'rest/timeMeasurement/' + name[i] + suffix;
-            console.debug('url request: ', i, url);
-            $.get({
-                url: url,
-                success: function(resp) {
-                    update(i, JSON.parse(resp));
-                }
-            });
+            $.get(url, function(resp) {
+                console.debug('TMResp', resp);
+                update(resp);
+            }.bind(this));
         }
         function update(newdata) {
             var procedureid = -1;
             for (var i = 0; i < newdata.length; i++) {
                 if (typeof newdata[i] !== 'undefined') {
+                    console.debug('newdata', newdata[i]);
                     procedureid = newdata[i].procedure.id;
                     break;
                 }
@@ -80,15 +76,25 @@ PageView.extensions.graph = Backbone.View.extend({
             if (procedureid === -1) {
                 return;
             }
-            var series = this.series[procedureid].data;
-            series.push(newdata);
-            while (series.length > this.json.data.datapoints) {
-                series.shift();
+            var s = undefined;
+            for (var i = 0; i < that.series.length; i++) {
+                if (that.series[i].procedureid === procedureid) {
+                    var s = that.series[i];
+                    break;
+                }
+            }
+            if (typeof s === 'undefined') {
+                return;
+            }
+            
+            s.data.push(newdata);
+            while (s.data.length > that.json.data.datapoints) {
+                s.data.shift();
             }
 
-            this.graphics.setData([series]);
-            this.graphics.setupGrid();
-            this.graphics.draw();
+            that.graphics.setData([s]);
+            that.graphics.setupGrid();
+            that.graphics.draw();
         }
         ;
     },
@@ -166,8 +172,6 @@ PageView.extensions.graph = Backbone.View.extend({
         } else {
             var wrapper = {data: {procedureMapping: this.procedureMapping}};
             var j = $.extend(true, {}, json, wrapper);
-            console.debug('mapping', this.procedureMapping);
-            console.debug('j', j);
 
             var DOMString = this.DOMTemplate({json: j});
             container.append(DOMString);
@@ -186,7 +190,6 @@ PageView.extensions.graph = Backbone.View.extend({
         }
     },
     drawGraph: function(svgcontainer) {
-        console.debug('drawGraphics');
         if (this.svgcontainer.length === 0) {
             throw "No svgcontainer found";
         }
@@ -200,6 +203,7 @@ PageView.extensions.graph = Backbone.View.extend({
             for (var i = 0; i < graphOf.length; i++) {
                 var serie = {
                     data: [],
+                    procedureid: graphOf[i],
                     label: this.getNameFromProcedureId(graphOf[i])
                 };
                 this.series.push(serie);

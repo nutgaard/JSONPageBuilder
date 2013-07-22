@@ -46,6 +46,8 @@ _.addTemplateHelpers({
 });
 _.addTemplateHelpers({
     createHeader: function(graphOf, procedureMapping) {
+        console.debug('graphOf', graphOf, procedureMapping);
+        
         var names = [];
         for (var i = 0; i < graphOf.length; i++) {
             names.push(findNameForId(graphOf[i], procedureMapping));

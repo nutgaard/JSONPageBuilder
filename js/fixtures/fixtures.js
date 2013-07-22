@@ -480,14 +480,15 @@ Fixtures.prototype.getResponse = function(settings) {
         case 'data/TSATCalculator':
             json = this.getTSATCalculatorData();
             break;
-        case 'procedure/':
-            json = this.getAllProcedures();
-            break;
+//        case 'procedure/':
+//            json = this.getAllProcedures();
+//            break;
         default:
             delete settings.fixture;
+            console.debug('settings');
             json = $.ajax(settings);
     }
-    return JSON.stringify(json);
+    return json;
 }
 Fixtures.page = function(settings) {
     return new Fixtures(settings.url, settings.type).getResponse(settings);
