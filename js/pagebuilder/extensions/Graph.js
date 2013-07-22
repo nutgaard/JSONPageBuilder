@@ -60,7 +60,7 @@ PageView.extensions.graph = Backbone.View.extend({
         var to = interval.end().toISOString();
         var suffix = '?from=' + from + '&to=' + to + '&buckets=' + conf.datapoints;
         for (var i = 0; i < name.length; i++) {
-            var url = 'timeMeasurement/' + name[i] + suffix;
+            var url = 'rest/timeMeasurement/' + name[i] + suffix;
             console.debug('url request: ', i, url);
             $.get({
                 url: url,
