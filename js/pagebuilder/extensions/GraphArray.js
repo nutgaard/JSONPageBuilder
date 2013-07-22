@@ -52,7 +52,8 @@ PageView.extensions.grapharray = Backbone.View.extend({
 		type: 'grapharray',
 		data:{
 			graphOf: ['all'],
-			span: 4, //Sets the size of each graph and how many graphs there is in each row. e.g: span: 4 = 12/4= 3 graphs in each row.
+//Sets the size of each graph and how many graphs there is in each row. e.g: span: 4 = 12/4= 3 graphs in each row.
+			span: 4,
 			timeConfig:{
 				realtime: true,
 				pollInterval: 1000,
