@@ -1,8 +1,8 @@
-    (function () {
+(function () {
     /* nodejs */
     var moment = (typeof require === 'undefined') ? this.moment : require('moment');
 
-    var iso8601 = /^P(?:([0-9]+W)|([0-9]+Y)?([0-9]+M)?([0-9]+D)?(?:T([0-9]+H)?([0-9]+M)?([0-9]+S)?([0-9]+Z)?)?)$/;
+    var iso8601 = /^P(?:(\d+(?:[\.,]\d{0,3})?W)|(\d+(?:[\.,]\d{0,3})?Y)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?D)?(?:T(\d+(?:[\.,]\d{0,3})?H)?(\d+(?:[\.,]\d{0,3})?M)?(\d+(?:[\.,]\d{0,3})?S)?)?)$/;
 
     function isISODuration(text) {
         return iso8601.test(text);
@@ -18,16 +18,17 @@
         if (matches === null) {
             throw '"' + text + '" is an invalid ISO 8601 duration';
         }
-        return moment.duration({
-            weeks: parseInt(matches[1], 10),
-            years: parseInt(matches[2], 10),
-            months: parseInt(matches[3], 10),
-            days: parseInt(matches[4], 10),
-            hours: parseInt(matches[5], 10),
-            minutes: parseInt(matches[6], 10),
-            seconds: parseInt(matches[7], 10),
-            milliseconds: parseInt(matches[8], 10)
-        });
+        var d = {
+            weeks: parseFloat(matches[1], 10),
+            years: parseFloat(matches[2], 10),
+            months: parseFloat(matches[3], 10),
+            days: parseFloat(matches[4], 10),
+            hours: parseFloat(matches[5], 10),
+            minutes: parseFloat(matches[6], 10),
+            seconds: parseFloat(matches[7], 10),
+            milliseconds: parseFloat(matches[8], 10)
+        }
+        return moment.duration(d);
     };
 
     moment.duration.fn = durationFn.fn;
@@ -45,8 +46,7 @@
             ((Math.abs(this.hours()) + Math.abs(this.minutes()) + Math.abs(this.seconds()) + Math.abs(this.milliseconds()) > 0) ? 'T' : '') +
             append(Math.abs(this.hours()), 'H') +
             append(Math.abs(this.minutes()), 'M') +
-            append(Math.abs(this.seconds()), 'S') +
-            append(Math.abs(this.milliseconds()), 'Z');
+            append(Math.abs(this.seconds())+Math.abs(this.milliseconds())/1000, 'S')
     };
 
     // http://stackoverflow.com/q/1353684/1206952

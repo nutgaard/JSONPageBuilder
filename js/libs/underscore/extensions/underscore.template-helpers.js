@@ -44,3 +44,31 @@ _.addTemplateHelpers({
         }
     }
 });
+_.addTemplateHelpers({
+    createHeader: function(graphOf, procedureMapping) {
+        var names = [];
+        for (var i = 0; i < graphOf.length; i++) {
+            names.push(findNameForId(graphOf[i], procedureMapping));
+        }
+        return names.join('/');
+        
+        function findNameForId(id, procedureMapping) {
+            for (var i = 0; i < procedureMapping.length; i++) {
+                if (id === procedureMapping[i].id){
+                    return createNameFromProcedure(procedureMapping[i]);
+                    break;
+                }
+            }
+            return 'Unknown';
+        }
+        function createNameFromProcedure(procedure) {
+            var name = 'Unknown';
+            if (procedure.name){
+                name = procedure.name;
+            }else if(procedure.className || procedure.method) {
+               name = procedure.className+(procedure.method ? '.'+procedure.method : ''); 
+            }
+            return name;
+        }
+    }
+});

@@ -2,7 +2,6 @@ PageView.extensions.graph = Backbone.View.extend({
     render: function() {
         this.container = this.$el;
         this.json = $.extend(true, {}, this.jsonDefaults, this.model.attributes);
-
         this.svgcontainer = undefined;
         this.graphics = undefined;
         this.series;
@@ -11,13 +10,26 @@ PageView.extensions.graph = Backbone.View.extend({
         this.isShown = false;
         this.placeholder;
         this.containerwidth;
+        this.procedureMapping;
 
-        this.svgcontainer = this.createDOMStructure(this.container, this.json);
-        this.createModalIfActivated(this.json);
-        this.graphics = this.drawGraph(this.svgcontainer);
-        this.startUpdate();
-        this.createResizeHandler();
-        this.createDestroyHandler();
+        this.getProcedureMapping(function() {
+            this.svgcontainer = this.createDOMStructure(this.container, this.json);
+            this.createModalIfActivated(this.json);
+            this.graphics = this.drawGraph(this.svgcontainer);
+            this.startUpdate();
+            this.createResizeHandler();
+            this.createDestroyHandler();
+        }.bind(this));
+    },
+    getProcedureMapping: function(callback) {
+        var that = this;
+        $.get({
+            url: 'procedure/',
+            success: function(resp) {
+                that.procedureMapping = JSON.parse(resp);
+                callback();
+            }
+        });
     },
     destroy_view: function() {
         this.undelegateEvents();
@@ -40,20 +52,45 @@ PageView.extensions.graph = Backbone.View.extend({
         }
     },
     updateGraph: function() {
-        var last = this.series[0].data;
-        if (last.length === 0) {
-            var x = 0;
-        } else {
-            var x = last[last.length - 1][0] + 1000;
+        var name = this.json.data.graphOf;
+        var conf = this.json.data;
+        var intervalConf = conf.timeConfig.pt.join('/');
+        var interval = new moment().interval(intervalConf);
+        var from = interval.start().toISOString();
+        var to = interval.end().toISOString();
+        var suffix = '?from=' + from + '&to=' + to + '&buckets=' + conf.datapoints;
+        for (var i = 0; i < name.length; i++) {
+            var url = 'timeMeasurement/' + name[i] + suffix;
+            console.debug('url request: ', i, url);
+            $.get({
+                url: url,
+                success: function(resp) {
+                    update(i, JSON.parse(resp));
+                }
+            });
         }
-        var data = [x, Math.random()];
-        this.series[0].data.push(data);
-        if (this.series[0].data.length > 200) {
-            this.series[0].data.shift();
+        function update(newdata) {
+            var procedureid = -1;
+            for (var i = 0; i < newdata.length; i++) {
+                if (typeof newdata[i] !== 'undefined') {
+                    procedureid = newdata[i].procedure.id;
+                    break;
+                }
+            }
+            if (procedureid === -1) {
+                return;
+            }
+            var series = this.series[procedureid].data;
+            series.push(newdata);
+            while (series.length > this.json.data.datapoints) {
+                series.shift();
+            }
+
+            this.graphics.setData([series]);
+            this.graphics.setupGrid();
+            this.graphics.draw();
         }
-        this.graphics.setData([this.series[0].data]);
-        this.graphics.setupGrid();
-        this.graphics.draw();
+        ;
     },
     createDestroyHandler: function() {
         $('body').on('destroy_view', function() {
@@ -76,7 +113,7 @@ PageView.extensions.graph = Backbone.View.extend({
             var nw = c.width();
         } else {
             var c = this.svgcontainer;
-			var nw = this.svgcontainer.parent().width() ? this.svgcontainer.parent().width() : this.containerwidth;
+            var nw = this.svgcontainer.parent().width() ? this.svgcontainer.parent().width() : this.containerwidth;
         }
         var maxheight = 600;
         this.svgcontainer.height(nw < maxheight ? nw : maxheight);
@@ -97,15 +134,11 @@ PageView.extensions.graph = Backbone.View.extend({
             that.isModal = true;
             that.placeholder.removeClass().addClass('span12');
             that.placeholder.append(that.svgcontainer.children());
-
             var modalheader = that.json.data.graphOf.join('/');
             var modalbody = that.placeholder;
-
             modal.find('.modal-header>h3').html(modalheader);
             modal.find('.modal-body').html(modalbody);
-
             modal.bigmodal('show');
-
             modal.on('shown', function() {
                 $(document).trigger('resize');
                 that.isShown = true;
@@ -131,7 +164,12 @@ PageView.extensions.graph = Backbone.View.extend({
         if (typeof this.svgcontainer !== 'undefined') {
             out = this.svgcontainer;
         } else {
-            var DOMString = this.DOMTemplate({json: json});
+            var wrapper = {data: {procedureMapping: this.procedureMapping}};
+            var j = $.extend(true, {}, json, wrapper);
+            console.debug('mapping', this.procedureMapping);
+            console.debug('j', j);
+
+            var DOMString = this.DOMTemplate({json: j});
             container.append(DOMString);
             out = container.find('div:last');
         }
@@ -148,34 +186,67 @@ PageView.extensions.graph = Backbone.View.extend({
         }
     },
     drawGraph: function(svgcontainer) {
+        console.debug('drawGraphics');
         if (this.svgcontainer.length === 0) {
             throw "No svgcontainer found";
         }
         svgcontainer.html('');
-        this.series = [{
-                data: [],
-                label: this.json.data.graphOf[0]
-            }];
+
         if (typeof this.graphics !== 'undefined') {
-            series = this.graphics.series;
+            this.series = this.graphics.series;
+        } else {
+            var graphOf = this.json.data.graphOf;
+            this.series = [];
+            for (var i = 0; i < graphOf.length; i++) {
+                var serie = {
+                    data: [],
+                    label: this.getNameFromProcedureId(graphOf[i])
+                };
+                this.series.push(serie);
+            }
         }
         var maxheight = 600;
         svgcontainer.height(svgcontainer.width() < maxheight ? svgcontainer.width() : maxheight);
         var graph = $.plot(svgcontainer[0], this.series, this.json.data.graphOptions);
         return graph;
     },
-    DOMTemplate: PageView.template('<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>><h5 class="muted text-center"><%= json.data.graphOf.join("/") %></h5><div class="svgcontainer"></div></div>'),
+    getNameFromProcedureId: function(id) {
+        for (var i = 0; i < this.procedureMapping.length; i++) {
+            if (id === this.procedureMapping[i].id) {
+                return createNameFromProcedure(this.procedureMapping[i]);
+                break;
+            }
+        }
+        return 'Unknown';
+
+        function createNameFromProcedure(procedure) {
+            var name = 'Unknown';
+            if (procedure.name) {
+                name = procedure.name;
+            }
+            return name;
+        }
+    },
+    DOMTemplate: PageView.template('\
+<div <%= iif_attr("class", json.classes) %> <%= iif_attr("id", json.id) %>>\n\
+    <h5 class="muted text-center">\n\
+        <%= createHeader(json.data.graphOf, json.data.procedureMapping) %>\n\
+    </h5>\n\
+    <div class="svgcontainer">\n\
+    </div>\n\
+</div>'),
     jsonDefaults: {
         type: 'graph',
         classes: '',
         id: '',
         data: {
             modal: false,
+            datapoints: 200,
             graphOf: [],
             timeConfig: {
                 realtime: false,
                 pollInterval: 1000,
-                pt: ['PT1D']
+                pt: ['PT24H/']
             },
             graphOptions: {
                 series: {

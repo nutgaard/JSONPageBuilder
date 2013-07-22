@@ -35,10 +35,10 @@ function Fixtures(url, type) {
 //                            id: '',
                         data: {
                             modal: true,
-                            graphOf: ['ICWThingy'],
+                            graphOf: [100],
                             timeConfig: {
                                 realtime: false,
-                                pt: ["PT24H"]
+                                pt: ["PT24H/"]
                             }
                         }
                     },
@@ -48,10 +48,10 @@ function Fixtures(url, type) {
 //                            id: '',
                         data: {
                             modal: true,
-                            graphOf: ['TSATCalculator'],
+                            graphOf: [101],
                             timeConfig: {
                                 realtime: false,
-                                pt: ["PT24H"]
+                                pt: ["PT24H/"]
                             }
                         }
                     },
@@ -61,10 +61,10 @@ function Fixtures(url, type) {
 //                            id: '',
                         data: {
                             modal: true,
-                            graphOf: ['ICWThingy', 'TSATCalculator'],
+                            graphOf: [100, 101],
                             timeConfig: {
                                 realtime: false,
-                                pt: ["PT24H"]
+                                pt: ["PT24H/"]
                             }
                         }
                     }
@@ -428,19 +428,29 @@ function Fixtures(url, type) {
             ]
         }
     }
-    this.getAllProcedures = function()
-    {
-        return ['ICWThingy', 'TSATCalculator', 'ICWThingy',
-            'TSATCalculator', 'ICWThingy', 'TSATCalculator',
-            'ICWThingy', 'TSATCalculator', 'ICWThingy',
-            'TSATCalculator', 'ICWThingy', 'TSATCalculator',
-            'ICWThingy', 'TSATCalculator', 'ICWThingy',
-            'TSATCalculator', 'ICWThingy', 'TSATCalculator',
-            'ICWThingy', 'TSATCalculator', 'ICWThingy',
-            'TSATCalculator', 'ICWThingy', 'TSATCalculator',
-            'ICWThingy', 'TSATCalculator', 'ICWThingy',
-            'TSATCalculator', 'ICWThingy', 'TSATCalculator',
-            'ICWThingy', 'TSATCalculator'];
+    this.getAllProcedures = function() {
+        return [
+            {"id": 100, "name": null, "className": "UpdateMessageFactory", "method": "createUpdatesForPublishing"},
+            {"id": 101, "name": null, "className": "Wait", "method": null},
+            {"id": 102, "name": null, "className": "Total", "method": null},
+            {"id": 103, "name": null, "className": "IcwMessageProcessorBean", "method": "process"},
+            {"id": 104, "name": null, "className": "FlightServiceImpl", "method": "process"},
+            {"id": 105, "name": null, "className": "Milestone", "method": "execute"},
+            {"id": 600, "name": null, "className": "FlightRepository", "method": "getIataAirport"},
+            {"id": 601, "name": null, "className": "FlightWebservice", "method": "getFlights"},
+            {"id": 602, "name": null, "className": "CacheUpdateRouteBean", "method": "getCdmFlightEntitiesFor"},
+            {"id": 603, "name": null, "className": "CacheUpdateRouteBean", "method": "applyRules"},
+            {"id": 604, "name": null, "className": "CacheUpdateRouteBean", "method": "populateCache"},
+            {"id": 605, "name": null, "className": "FlightRepository", "method": "findFlightLeg"},
+            {"id": 606, "name": null, "className": "FlightRepository", "method": "findOrCreateCdmFlight"},
+            {"id": 607, "name": null, "className": "ScheduledInboundMilestone", "method": "execute"},
+            {"id": 608, "name": null, "className": "ScheduledOutboundMilestone", "method": "execute"},
+            {"id": 609, "name": null, "className": "FlightPlanActivationInbound", "method": "execute"},
+            {"id": 610, "name": null, "className": "PunishmentAlgorithm", "method": "shouldPunishFlightLeg"},
+            {"id": 611, "name": null, "className": "DynamicTableAssignmentAlgorithm", "method": "assignNonRegulatedFlight"},
+            {"id": 612, "name": null, "className": "TsatCalculatorServiceImpl", "method": "calculateTtotAndTsatFor"},
+            {"id": 613, "name": null, "className": "FlightPlanActivationOutbound", "method": "execute"}
+        ];
     }
 }
 Fixtures.prototype.getResponse = function(settings) {
@@ -470,7 +480,7 @@ Fixtures.prototype.getResponse = function(settings) {
         case 'data/TSATCalculator':
             json = this.getTSATCalculatorData();
             break;
-        case 'procedure/all':
+        case 'procedure/':
             json = this.getAllProcedures();
             break;
         default:
