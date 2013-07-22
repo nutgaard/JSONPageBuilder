@@ -56,7 +56,7 @@ PageView.extensions.graph = Backbone.View.extend({
         this.graphics.draw();
     },
     createDestroyHandler: function() {
-        this.container.on('destroy_view', function() {
+        $('body').on('destroy_view', function() {
             this.destroy_view();
         }.bind(this));
     },
@@ -173,7 +173,7 @@ PageView.extensions.graph = Backbone.View.extend({
             modal: false,
             graphOf: [],
             timeConfig: {
-                realtime: true,
+                realtime: false,
                 pollInterval: 1000,
                 pt: ['PT1D']
             },
