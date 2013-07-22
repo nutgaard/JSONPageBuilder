@@ -5,22 +5,22 @@ function Fixtures(url, type) {
 
     this.getNavbar = function() {
         return [
-            {
-                type: 'navbar',
-                classes: 'navbar-inverse navbar-fixed-top',
-                data: {
-                    brand: 'CDMS-Profile',
-                    links: [
-                        {href: '#last24h', text: 'Last 24 h'},
-                        {href: '#last72h', text: 'Last 72 h'},
-                        {href: '#last1w', text: 'Last week'},
-                        {href: '#last2w', text: 'Last two weeks'},
-                        {href: '#realtime', text: 'Realtime'},
-                        {href: '#settings', text: 'Settings'}
-                    ]
-                }
-            }
-        ];
+                      {
+                          type: 'navbar',
+                          classes: 'navbar-inverse navbar-fixed-top',
+                          data: {
+                              brand: 'CDMS-Profile',
+                              links: [
+                                  {href: '#last24h', text: 'Last 24 h'},
+                                  {href: '#last72h', text: 'Last 72 h'},
+                                  {href: '#last1w', text: 'Last week'},
+                                  {href: '#last2w', text: 'Last two weeks'},
+                                  {href: '#realtime', text: 'Realtime'},
+                                  {href: '#settings', text: 'Settings'}
+                              ]
+                          }
+                      }
+                  ];
     };
     this.getLast24hJSON = function() {
         return [
@@ -456,22 +456,22 @@ function Fixtures(url, type) {
 Fixtures.prototype.getResponse = function(settings) {
     var json = {};
     switch (this.url) {
-        case 'page/navbar':
+        case 'layout/navbar':
             json = this.getNavbar();
             break;
-        case 'page/last24h':
+        case 'layout/last24h':
             json = this.getLast24hJSON();
             break;
-        case 'page/last72h':
+        case 'layout/last72h':
             json = this.getLast72hJSON();
             break;
-        case 'page/last1w':
+        case 'layout/last1w':
             json = this.getLastWeekJSON();
             break;
-        case 'page/last2w':
+        case 'layout/last2w':
             json = this.getLast2WeeksJSON();
             break;
-        case 'page/realtime':
+        case 'layout/realtime':
             json = this.getRealtimeJSON();
             break;
         case 'data/ICWThingy':
