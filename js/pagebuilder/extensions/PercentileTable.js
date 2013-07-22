@@ -43,10 +43,8 @@ PageView.extensions.percentileTable = Backbone.View.extend({
                     $.get(url, function(resp) {
                         var resp = resp;
                         var tr = container.find('tr[data-name=' + name + ']');
-                        console.debug('percentileResp', resp);
                         for (var i = 0; i < json.data.percentiles.values.length; i++) {
                             var td = tr.find('td[data-percentile="' + json.data.percentiles.values[i] + '"]');
-                            console.debug('td, ', td);
                             var tdData = resp[i];
                             td.html(tdData);
                         }
@@ -81,7 +79,6 @@ PageView.extensions.percentileTable = Backbone.View.extend({
         }
     },
     percentileClass: function(row, limits) {
-        console.debug('class', row, limits);
         var max = -1;
         var ind = 0;
         row.children().slice(1).each(function() {

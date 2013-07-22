@@ -68,7 +68,6 @@ PageView.extensions.graph = Backbone.View.extend({
             var procedureid = -1;
             for (var i = 0; i < newdata.length; i++) {
                 if (typeof newdata[i] !== 'undefined') {
-                    console.debug('newdata', newdata[i]);
                     procedureid = newdata[i].procedure.id;
                     break;
                 }
@@ -77,26 +76,45 @@ PageView.extensions.graph = Backbone.View.extend({
                 return;
             }
             var s = undefined;
+            var remI = -1;
             for (var i = 0; i < that.series.length; i++) {
                 if (that.series[i].procedureid === procedureid) {
-                    var s = that.series[i];
+                    s = that.series[i];
+                    remI = i;
                     break;
                 }
             }
             if (typeof s === 'undefined') {
                 return;
             }
-            
+            console.debug('pushing', newdata, 'on', s);
             s.data.push(newdata);
+            var nd;
+            while (typeof (nd = newdata.shift()) !== 'undefined') {
+                if (nd === null) {
+                    continue;
+                }
+                s.data.push(that.parseTimestamp(nd));
+            }
             while (s.data.length > that.json.data.datapoints) {
                 s.data.shift();
             }
+            console.debug('s.length', s.data.length, s);
+            that.series[remI] = s;
 
-            that.graphics.setData([s]);
+
+            that.graphics.setData(that.series);
             that.graphics.setupGrid();
             that.graphics.draw();
+            
+            console.debug('gr', that.graphics);
+            
         }
-        ;
+    },
+    parseTimestamp: function(timestamp) {
+        var time = moment(timestamp.jodaTimestamp).valueOf();
+        var duration = moment.duration(timestamp.duration)._milliseconds;
+        return [time, duration];
     },
     createDestroyHandler: function() {
         $('body').on('destroy_view', function() {
